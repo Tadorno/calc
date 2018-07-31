@@ -2,11 +2,11 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use \app\util\MessageUtil;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FeriadoRecord */
 
-$model = $response->getData();
 $this->title = $model->descricao;
 $this->params['breadcrumbs'][] = ['label' => 'Feriados', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Remover', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Deseja realmente remover este registro?',
+                'confirm' => MessageUtil::getMessage("MSGA1"),
                 'method' => 'post',
             ],
         ]) ?>

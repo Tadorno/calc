@@ -10,6 +10,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
+use\app\util\MessageResponse;
 
 /**
  * Description of Controller
@@ -46,5 +47,9 @@ class ControllerTrait extends Controller {
         if ($session->has($key)){
             $session->remove($key);
         }
+    }
+
+    public function addFlashMessage(MessageResponse $response){
+        Yii::$app->session->setFlash($response->getTypeMessage(), $response->getMessages());
     }
 }

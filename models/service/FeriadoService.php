@@ -11,7 +11,6 @@ namespace app\models\service;
 use Yii;
 use\app\util\MessageResponse;
 use app\models\FeriadoRecord;
-use app\models\FeriadoModel;
 use \app\util\MessageUtil;
 use \yii\web\NotFoundHttpException;
 /**
@@ -48,8 +47,7 @@ class FeriadoService extends ServiceTrait{
     
     public function findById($id){
         try{
-            $model = new FeriadoModel($this->findModel($id));
-            $this->getRetorno()->setData($model);
+            $this->getRetorno()->setData($this->findModel($id));
         }catch(\Exception $e){
             $this->getRetorno()->setSuccess(false);
             $this->getRetorno()->setTypeMessage(MessageResponse::ERROR);

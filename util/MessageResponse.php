@@ -27,7 +27,7 @@ class MessageResponse {
         return $this->success;
     }
 
-    function getMessage() {
+    function getMessages() {
         return $this->messages;
     }
 

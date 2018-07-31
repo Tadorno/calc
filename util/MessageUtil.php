@@ -18,20 +18,21 @@ class MessageUtil {
         'MSGS1'=>'Operação realizada com sucesso!',
         
         //Alerta MSGA
-        'MSGA1'=>'Usuário não encontrado ou senha incorreta!',
-        'MSGA2'=>'Usuário desativado no sistema.',
-        'MSGA3'=>'Favor preencher os campos obrigatórios.',
+        'MSGA1'=>'Deseja realmente excluir este item?',
         
         //Info MSGI
         
         //Error MSGE
         'MSGE1'=>'Ocorreu um erro em sua requisição.',
         'MSGE2'=>'Não foi possível realizar esta consulta.',
+        'MSGE3'=>'Campo obrigatório.',
+        'MSGE4'=>'Nome já cadastrado.',
+        'MSGE5'=>'Valor inválido.',
     );
     
     public static function getMessage($key){
         if(isset(self::$msg[$key])){
-            return utf8_encode(self::$msg[$key]);
+            return self::$msg[$key];
         }
         throw new \Exception("Chave inexistente."); 
     }

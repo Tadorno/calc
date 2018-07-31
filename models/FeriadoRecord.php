@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use \app\util\MessageUtil;
+use app\enums\MesEnum;
 use Yii;
 
 /**
@@ -28,11 +30,11 @@ class FeriadoRecord extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['descricao', 'dia', 'mes'], 'required', 'message' => 'Campo obrigatório.'],
+            [['descricao', 'dia', 'mes'], 'required', 'message' => MessageUtil::getMessage("MSGE3")],
             ['descricao', 'trim'],
-            [['dia', 'mes'], 'integer'],
+            [['dia', 'mes'], 'integer', 'message' => MessageUtil::getMessage("MSGE5")],
             [['descricao'], 'string', 'max' => 100],
-            [['descricao'], 'unique'],
+            [['descricao'], 'unique' , 'message' => MessageUtil::getMessage("MSGE4")]
         ];
     }
 
@@ -47,5 +49,9 @@ class FeriadoRecord extends \yii\db\ActiveRecord
             'dia' => 'Dia',
             'mes' => 'Mês',
         ];
+    }
+
+    public function getData(){
+        return str_pad($this->dia, 2, '0', STR_PAD_LEFT) . '/' . MesEnum::toString($this->mes);
     }
 }

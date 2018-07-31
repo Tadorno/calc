@@ -47,6 +47,7 @@ class FeriadoSearch extends FeriadoRecord
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [ 'pageSize' => 10 ],
         ]);
 
         $this->load($params);
@@ -66,7 +67,10 @@ class FeriadoSearch extends FeriadoRecord
 
         $query->andFilterWhere(['like', 'descricao', $this->descricao]);
 
-
+        $query->orderBy([
+            'mes' => SORT_ASC,
+            'dia'=> SORT_ASC
+        ]); 
         
         return $dataProvider;
     }
