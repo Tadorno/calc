@@ -17,7 +17,7 @@ use\app\util\MessageResponse;
  *
  * @author tulio
  */
-class ControllerTrait extends Controller {
+abstract class ControllerTrait extends Controller {
     
     public function getFromSession($key){
         $session = Yii::$app->session;

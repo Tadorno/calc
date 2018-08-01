@@ -64,9 +64,16 @@ class FeriadoController extends ControllerTrait
     {
         $retorno = $this->getService()->findById($id);
 
-        return $this->render('view', [
-            'model' => $retorno->getData(),
-        ]);
+        if($retorno->getSuccess()){
+            return $this->render('view', [
+                'model' => $retorno->getData(),
+            ]);   
+        }else{
+            $this->addFlashMessage($retorno);
+        
+            return $this->redirect(['index']);
+        }
+        
     }
 
     /**
@@ -123,10 +130,7 @@ class FeriadoController extends ControllerTrait
         }else{
             $this->addFlashMessage($retorno);
 
-            return $this->render('update', [
-                'model' => $retorno->getData(),
-                'mesList' => $mesList
-            ]);
+            return $this->redirect(['index']);
         }
     }
 

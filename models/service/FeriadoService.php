@@ -8,11 +8,9 @@
 
 namespace app\models\service;
 
-use Yii;
-use\app\util\MessageResponse;
 use app\models\FeriadoRecord;
-use \app\util\MessageUtil;
 use \yii\web\NotFoundHttpException;
+use \app\util\MessageUtil;
 /**
  * Description of FeriadoService
  *
@@ -20,52 +18,8 @@ use \yii\web\NotFoundHttpException;
  */
 class FeriadoService extends ServiceTrait{
     
-    public function persist($id = null){
-        $model = new FeriadoRecord();
-        
-        try{
-            if(!empty($id)){
-                $model = $this->findModel($id);
-            }
-            /*
-             * Independente do resultado, devolve o modelo
-             */
-            $this->getRetorno()->setData($model);
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $this->getRetorno()->addMessage(MessageUtil::getMessage("MSGS1"));
-            } else {
-                $this->getRetorno()->setSuccess(false);
-            }
-        }catch(\Exception $e){
-            $this->getRetorno()->setSuccess(false);
-            $this->getRetorno()->setTypeMessage(MessageResponse::ERROR);
-            $this->getRetorno()->addMessage(MessageUtil::getMessage("MSGE1"));
-            $this->getRetorno()->setData($model);
-        }
-        return $this->getRetorno();
-    }
-    
-    public function findById($id){
-        try{
-            $this->getRetorno()->setData($this->findModel($id));
-        }catch(\Exception $e){
-            $this->getRetorno()->setSuccess(false);
-            $this->getRetorno()->setTypeMessage(MessageResponse::ERROR);
-            $this->getRetorno()->addMessage(MessageUtil::getMessage("MSGE2"));
-        }
-        return $this->getRetorno();
-    }
-    
-    public function delete($id){
-        try{
-            $this->findModel($id)->delete();
-            $this->getRetorno()->addMessage(MessageUtil::getMessage("MSGS1"));
-        }catch(\Exception $e){
-            $this->getRetorno()->setSuccess(false);
-            $this->getRetorno()->setTypeMessage(MessageResponse::ERROR);
-            $this->getRetorno()->addMessage(MessageUtil::getMessage("MSGE1"));
-        }
-        return $this->getRetorno();
+    protected function getModel(){
+        return $model = new FeriadoRecord();
     }
     
     /**
@@ -75,12 +29,12 @@ class FeriadoService extends ServiceTrait{
      * @return FeriadoRecord the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    private function findModel($id)
+    protected function findModel($id)
     {
         if (($model = FeriadoRecord::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException(MessageUtil::getMessage("MSGE2"));
+            throw new NotFoundHttpException(MessageUtil::getMessage("MSGE6"));
         }
     }
 }

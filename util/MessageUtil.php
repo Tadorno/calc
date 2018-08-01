@@ -28,6 +28,7 @@ class MessageUtil {
         'MSGE3'=>'Campo obrigatório.',
         'MSGE4'=>'Nome já cadastrado.',
         'MSGE5'=>'Valor inválido.',
+        'MSGE6'=>'Item não encontrado.',
     );
     
     public static function getMessage($key){

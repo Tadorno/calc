@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'descricao',
             'data',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'app\components\CustomActionColumn'],
         ],
     ]); ?>
 </div>
