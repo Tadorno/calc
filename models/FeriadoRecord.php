@@ -45,9 +45,9 @@ class FeriadoRecord extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'descricao' => 'Descrição',
-            'dia' => 'Dia',
-            'mes' => 'Mês',
+            'descricao' => 'Descrição *',
+            'dia' => 'Dia *',
+            'mes' => 'Mês *',
         ];
     }
 
