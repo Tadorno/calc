@@ -47,7 +47,10 @@ $this->registerJs($script, \yii\web\View::POS_READY);
     <div class="col-md-12">
         <?= $form->field($model, 'processo', [
                 'template' => '{label}<div class="col-sm-4">{input}{error}</div>'
-            ])->textInput(['maxlength' => true]) ?>
+            ])->textInput([
+                'maxlength' => true,
+                'onchange'=> '$("#span_processo").text($(this).val());'
+            ]) ?>
     </div>
 
     <div class="col-md-12">
@@ -145,8 +148,8 @@ $this->registerJs($script, \yii\web\View::POS_READY);
         
             echo "<div id='modelContent'>";
                 echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!<h4>";
-
-                
+                echo "<ht/>";
+                echo "<span id='span_processo'></span>";
             echo "</div>";
         Modal::end();
     ?>
