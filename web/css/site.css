@@ -121,3 +121,11 @@ a.desc:after {
 .row{
     margin: 0;
 }
+
+a.btn{
+    text-decoration: none;
+}
+
+a.btn-lg{
+    text-decoration: none;
+}

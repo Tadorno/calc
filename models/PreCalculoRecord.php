@@ -56,7 +56,7 @@ class PreCalculoRecord extends \yii\db\ActiveRecord
             'dt_afastamento' => 'Data de Afastamento *',
             'dt_prescricao' => 'Data de Prescrição *',
             'dt_atualizacao' => 'Data de Atualização *',
-            'dt_inicial' => 'Data de Inicio *',
+            'dt_inicial' => 'Data Inicial *',
             'dtc_cadastro' => 'Data de Cadastro',
         ];
     }
