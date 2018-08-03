@@ -42,9 +42,16 @@ class CalculoController extends ControllerTrait
     {
         $retorno = $this->getService()->preCalculo();
 
-        return $this->render('pre-calculo', [
-            'model' => $retorno->getData()
-        ]);
+        if($retorno->getSuccess()){
+            return $this->redirect([
+                'calculo',
+                'pre-calculo' => $retorno->getData()
+            ]);
+        } else {
+            return $this->render('pre-calculo', [
+                'model' => $retorno->getData()
+            ]);
+        }  
     }
     
 }

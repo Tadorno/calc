@@ -56,13 +56,19 @@ $this->registerJs($script, \yii\web\View::POS_READY);
     <div class="col-md-12">
         <?= $form->field($model, 'reclamada', [
                 'template' => '{label}<div class="col-sm-4">{input}{error}</div>'
-            ])->textInput(['maxlength' => true]) ?>
+            ])->textInput([
+                'maxlength' => true,
+                'onchange'=> '$("#span_reclamada").text($(this).val());'
+            ]) ?>
     </div>
 
     <div class="col-md-12">
         <?= $form->field($model, 'reclamante', [
                 'template' => '{label}<div class="col-sm-4">{input}{error}</div>'
-            ])->textInput(['maxlength' => true]) ?>
+            ])->textInput([
+                'maxlength' => true,
+                'onchange'=> '$("#span_reclamante").text($(this).val());'
+            ]) ?>
     </div>
 
     <div class="row" >
@@ -75,6 +81,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'clientOptions' => [
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             $( "#'.Html::getInputId($model, 'dt_afastamento').'" ).datepicker( "option", "minDate", selectedDate ); 
+                            $("#span_dt_admissao").text(selectedDate);
                         }'),]
                     ]) ?>
         </div>
@@ -88,6 +95,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'clientOptions' => [
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             $( "#'.Html::getInputId($model, 'dt_admissao').'" ).datepicker( "option", "maxDate", selectedDate ); 
+                            $("#span_dt_afastamento").text(selectedDate);
                         }'),]
                     ]) ?>
         </div>
@@ -104,8 +112,12 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             var d = new Date($.datepicker.formatDate("yy-mm-dd", $(this).datepicker("getDate")) + "T00:00:00-03:00");
                             d.setFullYear(d.getFullYear()-5);
-                            $( "#'.Html::getInputId($model, 'dt_prescricao').'" ).datepicker( "setDate", d ); 
-                            $( "#'.Html::getInputId($model, 'dt_prescricao').'" ).blur();
+
+                            var dt_prescricao = $( "#'.Html::getInputId($model, 'dt_prescricao').'" ); 
+                            dt_prescricao.datepicker( "setDate", d ); 
+                            dt_prescricao.blur();
+                            $("#span_dt_inicial").text(selectedDate);
+                            $("#span_dt_prescricao").text($.datepicker.formatDate("dd/mm/yy", dt_prescricao.datepicker("getDate")));
                         }'),]
                 ]) ?>
         </div>
@@ -115,7 +127,11 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'template' => Html::activeLabel($model, 'dt_prescricao', ['class' => 'control-label col-sm-6']) .'<div class="col-sm-6">{input}{error}</div>'
                 ])->widget(DatePicker::className(),[
                     'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
-                    'dateFormat' => 'dd/MM/yyyy'
+                    'dateFormat' => 'dd/MM/yyyy',
+                    'clientOptions' => [
+                        'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
+                            $("#span_dt_prescricao").text(selectedDate);
+                    }'),]
                 ]) ?>
         </div>
     </div>
@@ -125,7 +141,12 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 'template' => Html::activeLabel($model, 'dt_atualizacao', ['class' => 'control-label col-sm-6']) .'<div class="col-sm-6">{input}{error}</div>'
             ])->widget(DatePicker::className(),[
                 'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
-                'dateFormat' => 'dd/MM/yyyy']) ?>
+                'dateFormat' => 'dd/MM/yyyy',
+                'clientOptions' => [
+                    'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
+                        $("#span_dt_atualizacao").text(selectedDate);
+                }'),]
+            ]) ?>
     </div>
 
     <div class="col-md-12" style="text-align:center">
@@ -145,11 +166,45 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 'size'   => 'model-lg',
                 'footer' => $footer
         ]);
-        
+
             echo "<div id='modelContent'>";
-                echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!<h4>";
-                echo "<ht/>";
-                echo "<span id='span_processo'></span>";
+                echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!</h4>";
+
+                echo '<div class="form-group" style="margin-top:20px">';
+                    echo  Html::activeLabel($model, "processo", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_processo' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
+
+                echo '<div class="form-group">';
+                    echo  Html::activeLabel($model, "reclamada", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_reclamada' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
+
+                echo '<div class="form-group">';
+                    echo  Html::activeLabel($model, "reclamante", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_reclamante' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
+
+                echo '<div class="form-group">';
+                    echo  Html::activeLabel($model, "dt_admissao", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_dt_admissao' class='control-label col-sm-2 pull-left'></label>";
+                    
+                    echo  Html::activeLabel($model, "dt_afastamento", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_dt_afastamento' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
+
+                echo '<div class="form-group">';
+                    echo  Html::activeLabel($model, "dt_inicial", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_dt_inicial' class='control-label col-sm-2 pull-left'></label>";
+
+                    echo  Html::activeLabel($model, "dt_prescricao", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_dt_prescricao' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
+
+                echo '<div class="form-group">';
+                    echo  Html::activeLabel($model, "dt_atualizacao", ['class' => 'control-label col-sm-4']);
+                    echo "<label id='span_dt_atualizacao' class='control-label col-sm-2 pull-left'></label>";
+                echo "</div>";
             echo "</div>";
         Modal::end();
     ?>
