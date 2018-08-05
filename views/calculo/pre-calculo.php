@@ -39,7 +39,8 @@ $this->registerJs($script, \yii\web\View::POS_READY);
 
     <?php $form = ActiveForm::begin([
             'id' => 'id-pre-calculo-form',
-            'layout' => 'horizontal'
+            'layout' => 'horizontal',
+            'action' => 'calculo'
         ]); ?>
 
     <input type="hidden" id="confirm-form" value="false"/>

@@ -7,6 +7,9 @@ use app\models\service\CalculoService;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\PreCalculoRecord;
+use app\exceptions\PreCalculoNaoIniciadoException;
+use app\util\MessageUtil;
 
 class CalculoController extends ControllerTrait
 {
@@ -41,17 +44,26 @@ class CalculoController extends ControllerTrait
     public function actionPreCalculo()
     {
         $retorno = $this->getService()->preCalculo();
+        
+        return $this->render('pre-calculo', [
+            'model' => $retorno->getData()
+        ]); 
+    }
 
-        if($retorno->getSuccess()){
-            return $this->redirect([
-                'calculo',
-                'pre-calculo' => $retorno->getData()
+    public function actionCalculo(){
+
+        try{
+            $retorno = $this->getService()->calculo();
+            $data = $retorno->getData();
+
+            return $this->render('calculo', [
+                'preCalculo' => $data["preCalculo"]
             ]);
-        } else {
-            return $this->render('pre-calculo', [
-                'model' => $retorno->getData()
-            ]);
-        }  
+        }catch(PreCalculoNaoIniciadoException $e){
+            $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));
+
+            return $this->redirect(['pre-calculo']);
+        }
     }
     
 }

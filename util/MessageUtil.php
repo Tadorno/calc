@@ -29,6 +29,7 @@ class MessageUtil {
         'MSGE4'=>'Nome já cadastrado.',
         'MSGE5'=>'Valor inválido.',
         'MSGE6'=>'Item não encontrado.',
+        'MSGE7'=>'Pré-cálculo não iniciado.',
     );
     
     public static function getMessage($key){

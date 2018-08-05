@@ -52,4 +52,8 @@ abstract class ControllerTrait extends Controller {
     public function addFlashMessage(MessageResponse $response){
         Yii::$app->session->setFlash($response->getTypeMessage(), $response->getMessages());
     }
+
+    public function addErrorMessage($msg){
+        Yii::$app->session->setFlash('danger', $msg);
+    }
 }

@@ -3,8 +3,8 @@ namespace app\models\service;
 
 use app\util\MessageResponse;
 use \yii\web\NotFoundHttpException;
-use \app\util\EncrypterUtil;
-use \app\util\MessageUtil;
+use app\util\EncrypterUtil;
+use app\util\MessageUtil;
 use Yii;
 
 /*

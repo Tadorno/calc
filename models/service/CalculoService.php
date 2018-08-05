@@ -10,7 +10,8 @@ namespace app\models\service;
 
 use app\models\PreCalculoRecord;
 use \yii\web\NotFoundHttpException;
-use \app\util\MessageUtil;
+use app\util\MessageUtil;
+use app\exceptions\PreCalculoNaoIniciadoException;
 use Yii;
 /**
  * Description of CalculoService
@@ -32,17 +33,22 @@ class CalculoService extends ServiceTrait{
         }
     }
 
-    public function preCalculo($id = null){
+    public function preCalculo(){
         $model = new PreCalculoRecord();
 
         $this->getRetorno()->setData($model);
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $this->getRetorno()->setSuccess(true);
-        } else {
-            $this->getRetorno()->setSuccess(false);
-        }
         
+        return $this->getRetorno();
+    }
+
+    public function calculo(){
+        $preCalculo = new PreCalculoRecord();
+
+        if($preCalculo->load(Yii::$app->request->post()) && $preCalculo->validate()){
+            $this->getRetorno()->setData(['preCalculo' => $preCalculo]);
+        } else {
+            throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
+        }
         return $this->getRetorno();
     }
 }
