@@ -33,7 +33,13 @@ $this->title = 'Cálculo';
                         'form' => $form
                     ]) ?>
                 </div>
-                <div class="tab-pane fade in active" id="tab2">Default 2</div>
+                <div class="tab-pane fade in active" id="tab2">
+                    <?= $this->render('_lancamento_horas', [
+                        'horasLancadas' => $horasLancadas,
+                        'anosTrabalhados' => $anosTrabalhados,
+                        'form' => $form
+                    ]) ?>
+                </div>
                 <div class="tab-pane fade" id="tab3">Default 3</div>
                 <div class="tab-pane fade" id="tab4">Default 4</div>
             </div>

@@ -129,3 +129,19 @@ a.btn{
 a.btn-lg{
     text-decoration: none;
 }
+
+.time{
+    width: 70px;
+}
+
+.sabado{
+    background-color: #b3b0b0 !important;
+}
+
+.domingo{
+    background-color: #b3b0b0 !important;  
+}
+
+.feriado{
+    background-color: #8facff !important;   
+}

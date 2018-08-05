@@ -9,8 +9,10 @@
 namespace app\models\service;
 
 use app\models\PreCalculoRecord;
+use app\models\LancamentoHoraRecord;
 use \yii\web\NotFoundHttpException;
 use app\util\MessageUtil;
+use app\util\DateUtil;
 use app\exceptions\PreCalculoNaoIniciadoException;
 use Yii;
 /**
@@ -45,10 +47,51 @@ class CalculoService extends ServiceTrait{
         $preCalculo = new PreCalculoRecord();
 
         if($preCalculo->load(Yii::$app->request->post()) && $preCalculo->validate()){
-            $this->getRetorno()->setData(['preCalculo' => $preCalculo]);
+
+            $dadosDeLancamento = $this->montarCamposParaLancamentoDeHoras($preCalculo);
+
+            $this->getRetorno()->setData([
+                'preCalculo' => $preCalculo,
+                'horasLancadas' => $dadosDeLancamento['horasLancadas'],
+                'anosTrabalhados' => $dadosDeLancamento['anosTrabalhados'],
+            ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
         }
         return $this->getRetorno();
+    }
+
+    private function montarCamposParaLancamentoDeHoras(PreCalculoRecord $preCalculo){
+        $dataAdmissao = DateUtil::strToDate($preCalculo->dt_admissao);
+        $dataAfastamento = DateUtil::strToDate($preCalculo->dt_afastamento);
+        $dataPrescricao = DateUtil::strToDate($preCalculo->dt_prescricao);
+
+        $dataInicioContagem = $dataAdmissao < $dataPrescricao ? $dataPrescricao : $dataAdmissao;
+
+        $intervalo = $dataInicioContagem->diff($dataAfastamento);
+
+        $horasLancadas = array();
+
+        $anosTrabalhados = array();
+
+        for($i = 0; $i<$intervalo->days; $i++){
+
+            if($i != 0){
+                $dataInicioContagem->add(new \DateInterval('P1D'));
+            }
+
+            $ano = $dataInicioContagem->format('Y');
+
+            if(!in_array($ano, $anosTrabalhados)){
+                array_push($anosTrabalhados, $ano);
+            }
+
+            $lancamento = new LancamentoHoraRecord();
+            $lancamento->iniciarData($dataInicioContagem);
+
+            array_push($horasLancadas, $lancamento);
+        }
+
+        return [ 'horasLancadas' => $horasLancadas, 'anosTrabalhados' => $anosTrabalhados];
     }
 }

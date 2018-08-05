@@ -30,41 +30,41 @@ use yii\helpers\Html;
     <div class="row">
         <div class="form-group">
             <?= Html::activeLabel($model, "reclamada", ['class' => 'control-label col-sm-4']); ?>
-            <label  id='span_reclamada' class='control-label col-sm-8 pull-left' style="text-align: left !important;"><?= $model->reclamada; ?></label>
+            <label  id='span_reclamada' class='control-label col-sm-8' style="text-align: left !important;"><?= $model->reclamada; ?></label>
         </div>
     </div>
 
     <div class="row">
         <div class="form-group">
             <?= Html::activeLabel($model, "reclamante", ['class' => 'control-label col-sm-4']); ?>
-            <label  id='span_reclamante' class='control-label col-sm-8 pull-left' style="text-align: left !important;"><?= $model->reclamante; ?></label>
+            <label  id='span_reclamante' class='control-label col-sm-8' style="text-align: left !important;"><?= $model->reclamante; ?></label>
         </div>
     </div>
 
     <div class="row">
         <div class="form-group">
             <?= Html::activeLabel($model, "dt_admissao", ['class' => 'control-label col-sm-4']); ?>
-            <label id='span_dt_admissao' class='control-label col-sm-2 pull-left'><?= $model->dt_admissao; ?></label>
+            <label id='span_dt_admissao' class='control-label col-sm-2' style="text-align: left !important;"><?= $model->dt_admissao; ?></label>
                         
             <?= Html::activeLabel($model, "dt_afastamento", ['class' => 'control-label col-sm-4']); ?>
-            <label id='span_dt_afastamento' class='control-label col-sm-2 pull-left'><?= $model->dt_afastamento; ?></label>
+            <label id='span_dt_afastamento' class='control-label col-sm-2' style="text-align: left !important;"><?= $model->dt_afastamento; ?></label>
         </div>
     </div>
 
     <div class="row">
         <div class="form-group">
             <?= Html::activeLabel($model, "dt_inicial", ['class' => 'control-label col-sm-4']); ?>
-            <label id='span_dt_inicial' class='control-label col-sm-2 pull-left'><?= $model->dt_inicial; ?></label>
+            <label id='span_dt_inicial' class='control-label col-sm-2' style="text-align: left !important;"><?= $model->dt_inicial; ?></label>
 
             <?= Html::activeLabel($model, "dt_prescricao", ['class' => 'control-label col-sm-4']); ?>
-            <label id='span_dt_prescricao' class='control-label col-sm-2 pull-left'><?= $model->dt_prescricao; ?></label>
+            <label id='span_dt_prescricao' class='control-label col-sm-2' style="text-align: left !important;"><?= $model->dt_prescricao; ?></label>
         </div>
     </div>
 
     <div class="row">
         <div class="form-group">
             <?= Html::activeLabel($model, "dt_atualizacao", ['class' => 'control-label col-sm-4']); ?>
-            <label id='span_dt_atualizacao' class='control-label col-sm-2 pull-left'><?= $model->dt_atualizacao; ?></label>
+            <label id='span_dt_atualizacao' class='control-label col-sm-2' style="text-align: left !important;"><?= $model->dt_atualizacao; ?></label>
         </div>
     </div>
 </div>

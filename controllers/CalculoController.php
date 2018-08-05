@@ -57,7 +57,9 @@ class CalculoController extends ControllerTrait
             $data = $retorno->getData();
 
             return $this->render('calculo', [
-                'preCalculo' => $data["preCalculo"]
+                'preCalculo' => $data["preCalculo"],
+                'horasLancadas' => $data["horasLancadas"],
+                'anosTrabalhados' => $data["anosTrabalhados"],
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));
