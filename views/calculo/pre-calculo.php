@@ -171,41 +171,9 @@ $this->registerJs($script, \yii\web\View::POS_READY);
             echo "<div id='modelContent'>";
                 echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!</h4>";
 
-                echo '<div class="form-group" style="margin-top:20px">';
-                    echo  Html::activeLabel($model, "processo", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_processo' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
-
-                echo '<div class="form-group">';
-                    echo  Html::activeLabel($model, "reclamada", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_reclamada' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
-
-                echo '<div class="form-group">';
-                    echo  Html::activeLabel($model, "reclamante", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_reclamante' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
-
-                echo '<div class="form-group">';
-                    echo  Html::activeLabel($model, "dt_admissao", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_dt_admissao' class='control-label col-sm-2 pull-left'></label>";
-                    
-                    echo  Html::activeLabel($model, "dt_afastamento", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_dt_afastamento' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
-
-                echo '<div class="form-group">';
-                    echo  Html::activeLabel($model, "dt_inicial", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_dt_inicial' class='control-label col-sm-2 pull-left'></label>";
-
-                    echo  Html::activeLabel($model, "dt_prescricao", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_dt_prescricao' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
-
-                echo '<div class="form-group">';
-                    echo  Html::activeLabel($model, "dt_atualizacao", ['class' => 'control-label col-sm-4']);
-                    echo "<label id='span_dt_atualizacao' class='control-label col-sm-2 pull-left'></label>";
-                echo "</div>";
+                echo $this->render('_pre_calculo_review', [
+                    'model' => $model
+                ]);
             echo "</div>";
         Modal::end();
     ?>
