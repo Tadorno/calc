@@ -5,8 +5,10 @@ use app\util\DateUtil;
 
 $script = <<< JS
     $(document).ready(function(){
+
+        let lancamento_horas = $('#tbody-lancamento-horas tr');
+
         $("#filtrarMes").on("change", function() {
-            Loading.show();
             filtrarTabela();
         });
 
@@ -18,18 +20,18 @@ $script = <<< JS
             let mesSelecionado = $("#filtrarMes").val();
             let anoSelecionado = $("#filtrarAno").val();
 
-            $('#tbody-lancamento-horas tr').removeClass("hide");
-            $('#tbody-lancamento-horas tr').addClass("hide-mes");
-            $('#tbody-lancamento-horas tr').addClass("hide-ano");
+            
+            lancamento_horas.removeClass("hide");
+            lancamento_horas.addClass("hide-mes hide-ano");
 
             if(mesSelecionado == ''){
-                $('#tbody-lancamento-horas tr').removeClass("hide-mes");    
+                lancamento_horas.removeClass("hide-mes");    
             } else {
                 $('.mes_' + mesSelecionado).removeClass("hide-mes");  
             }
 
             if(anoSelecionado == ''){
-                $('#tbody-lancamento-horas tr').removeClass("hide-ano"); 
+                lancamento_horas.removeClass("hide-ano"); 
             } else {
                 $('.ano_' + anoSelecionado).removeClass("hide-ano");    
             }
