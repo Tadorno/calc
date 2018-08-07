@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\jui\DatePicker;
 use yii\bootstrap\Modal;
+use app\util\MessageUtil;
 
 $this->title = 'Pré-Cálculo';
 
@@ -21,6 +22,20 @@ $script = <<< JS
 
         $('#id-pre-calculo-form').on('afterValidate', function (event, messages, errorAttributes) {
             if(errorAttributes.length === 0){
+                $('#msg_review').removeAttr('role').removeClass('alert alert-danger').text('');
+                $('#confirm-pre-calc').removeAttr('disabled');
+
+                var dt_admissao = new Date($.datepicker.formatDate("yy-mm-dd", $('#precalculorecord-dt_admissao').datepicker("getDate")) + "T00:00:00-03:00");
+                var dt_prescricao = new Date($.datepicker.formatDate("yy-mm-dd", $('#precalculorecord-dt_prescricao').datepicker("getDate")) + "T00:00:00-03:00");
+                var dt_afastamento = new Date($.datepicker.formatDate("yy-mm-dd", $('#precalculorecord-dt_afastamento').datepicker("getDate")) + "T00:00:00-03:00");
+
+                var dt_inicioContagem = dt_admissao > dt_prescricao ? dt_admissao : dt_prescricao;
+
+                if(dt_inicioContagem > dt_afastamento){
+                    $('#confirm-pre-calc').attr('disabled', 'disabled');
+                    $('#msg_review').attr('role', 'alert').addClass('alert alert-danger').text('Data de Prescrição ou de Admissão não pode ser maior que a Data de Afastamento.'); 
+                }
+
                 $("#modal-confirm").modal('show');
             }
         });
@@ -79,7 +94,9 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 ])->widget(DatePicker::className(),[
                     'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
                     'dateFormat' => 'dd/MM/yyyy',
+                    
                     'clientOptions' => [
+                        'changeYear'=> true,
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             $( "#'.Html::getInputId($model, 'dt_afastamento').'" ).datepicker( "option", "minDate", selectedDate ); 
                             $("#span_dt_admissao").text(selectedDate);
@@ -94,6 +111,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
                     'dateFormat' => 'dd/MM/yyyy',
                     'clientOptions' => [
+                        'changeYear'=> true,
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             $( "#'.Html::getInputId($model, 'dt_admissao').'" ).datepicker( "option", "maxDate", selectedDate ); 
                             $("#span_dt_afastamento").text(selectedDate);
@@ -110,6 +128,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
                     'dateFormat' => 'dd/MM/yyyy',
                     'clientOptions' => [
+                        'changeYear'=> true,
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             var d = new Date($.datepicker.formatDate("yy-mm-dd", $(this).datepicker("getDate")) + "T00:00:00-03:00");
                             d.setFullYear(d.getFullYear()-5);
@@ -130,6 +149,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
                     'dateFormat' => 'dd/MM/yyyy',
                     'clientOptions' => [
+                        'changeYear'=> true,
                         'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                             $("#span_dt_prescricao").text(selectedDate);
                     }'),]
@@ -144,6 +164,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 'options' => ['class' => 'form-control', 'readonly' => 'readonly', 'style' => 'background:white;'],
                 'dateFormat' => 'dd/MM/yyyy',
                 'clientOptions' => [
+                    'changeYear'=> true,
                     'onClose' => new \yii\web\JsExpression('function( selectedDate ) {
                         $("#span_dt_atualizacao").text(selectedDate);
                 }'),]
@@ -170,6 +191,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
 
             echo "<div id='modelContent'>";
                 echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!</h4>";
+                echo "<div id='msg_review'></div>";
 
                 echo $this->render('_pre_calculo_review', [
                     'model' => $model

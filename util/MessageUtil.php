@@ -30,6 +30,7 @@ class MessageUtil {
         'MSGE5'=>'Valor inválido.',
         'MSGE6'=>'Item não encontrado.',
         'MSGE7'=>'Pré-cálculo não iniciado.',
+        'MSGE8'=>'Data de Prescrição ou de Admissão não pode ser maior que a Data de Afastamento.',
     );
     
     public static function getMessage($key){

@@ -29,12 +29,16 @@ class LancamentoHoraRecord extends \yii\db\ActiveRecord
 
     function iniciarData(\DateTime $date) {
         $this->dia_da_demana = DateUtil::getDiaDaSemana($date);
-        $this->data = $date->format('d/m/Y') ;
-        $this->mes = $date->format('M') ;
-        $this->ano = $date->format('Y') ;
+        $this->data = $date->format('d/m/Y');
+        
+        $this->dia = $date->format('d');
+        $this->mes = $date->format('M');
+        $this->ano = $date->format('Y');
     }
 
     public $dia_da_demana;
+
+    public $dia;
 
     public $mes;
 
@@ -54,10 +58,10 @@ class LancamentoHoraRecord extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['data', 'horas_trabalhadas', 'id_pre_calculo'], 'required'],
+            [['data', 'horas_trabalhadas', 'horas_norturnas',  'id_pre_calculo'], 'required'],
             [['data', 'entrada_1', 'saida_1', 'entrada_2', 'saida_2', 'entrada_3', 'saida_3', 'entrada_4', 'saida_4'], 'safe'],
-            [['tempo_adicionado', 'id_pre_calculo'], 'integer'],
-            [['horas_trabalhadas'], 'number'],
+            [['id_pre_calculo'], 'integer'],
+            [['horas_trabalhadas', 'horas_norturnas'], 'number'],
             [['id_pre_calculo'], 'exist', 'skipOnError' => true, 'targetClass' => PreCalculo::className(), 'targetAttribute' => ['id_pre_calculo' => 'id']],
         ];
     }

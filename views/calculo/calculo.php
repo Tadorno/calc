@@ -5,6 +5,22 @@ use yii\bootstrap\ActiveForm;
 
 $this->title = 'Cálculo';
 
+$script = <<< JS
+    let inputs = $('#tabela-lancamento-horas input');
+    $(document).ready(function(){
+        $(".processar-horas").on("click", function() {
+            $.ajax({
+                url: '/calculo/processar-horas',
+                type: 'post',
+                data: inputs.serialize(),
+                success: function (data) {
+                    alert(data);
+                }
+            });
+        });
+    }); 
+JS;
+$this->registerJs($script, \yii\web\View::POS_READY);
 ?>
 <div class="calculo-create">
 
@@ -20,7 +36,7 @@ $this->title = 'Cálculo';
                 <ul class="nav nav-tabs">
                     <li><a href="#tab1" data-toggle="tab">Pré-cálculo</a></li>
                     <li class="active"><a href="#tab2" data-toggle="tab">Lançamento de horas</a></li>
-                    <li><a href="#tab3" data-toggle="tab">Default 3</a></li>
+                    <li><a href="#tab3" data-toggle="tab">Resumo de horas</a></li>
                     <li><a href="#tab4" data-toggle="tab">Default 4</a></li>
                 </ul>
         </div>

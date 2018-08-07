@@ -61,6 +61,10 @@ class CalculoService extends ServiceTrait{
         return $this->getRetorno();
     }
 
+    public function processarHoras(){
+        
+    }
+
     private function montarCamposParaLancamentoDeHoras(PreCalculoRecord $preCalculo){
         $dataAdmissao = DateUtil::strToDate($preCalculo->dt_admissao);
         $dataAfastamento = DateUtil::strToDate($preCalculo->dt_afastamento);
@@ -68,28 +72,31 @@ class CalculoService extends ServiceTrait{
 
         $dataInicioContagem = $dataAdmissao < $dataPrescricao ? $dataPrescricao : $dataAdmissao;
 
-        $intervalo = $dataInicioContagem->diff($dataAfastamento);
-
         $horasLancadas = array();
 
         $anosTrabalhados = array();
 
-        for($i = 0; $i<$intervalo->days; $i++){
+        if($dataAfastamento > $dataInicioContagem){
+            $intervalo = $dataInicioContagem->diff($dataAfastamento);
 
-            if($i != 0){
-                $dataInicioContagem->add(new \DateInterval('P1D'));
+            
+            for($i = 0; $i<$intervalo->days; $i++){
+
+                if($i != 0){
+                    $dataInicioContagem->add(new \DateInterval('P1D'));
+                }
+
+                $ano = $dataInicioContagem->format('Y');
+
+                if(!in_array($ano, $anosTrabalhados)){
+                    array_push($anosTrabalhados, $ano);
+                }
+
+                $lancamento = new LancamentoHoraRecord();
+                $lancamento->iniciarData($dataInicioContagem);
+
+                array_push($horasLancadas, $lancamento);
             }
-
-            $ano = $dataInicioContagem->format('Y');
-
-            if(!in_array($ano, $anosTrabalhados)){
-                array_push($anosTrabalhados, $ano);
-            }
-
-            $lancamento = new LancamentoHoraRecord();
-            $lancamento->iniciarData($dataInicioContagem);
-
-            array_push($horasLancadas, $lancamento);
         }
 
         return [ 'horasLancadas' => $horasLancadas, 'anosTrabalhados' => $anosTrabalhados];
