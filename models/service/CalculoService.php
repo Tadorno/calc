@@ -77,6 +77,9 @@ class CalculoService extends ServiceTrait{
         }
     }
 
+    /**
+     * Calcula o somatório dos intervalos de horas informados 
+     */
     private function calcularHorasTrabalhadas($lancamento){
         $intervalo_1 = $this->calcularIntervalo($lancamento['entrada_1'], $lancamento['saida_1']);
         $intervalo_2 = $this->calcularIntervalo($lancamento['entrada_2'], $lancamento['saida_2']);
@@ -95,6 +98,9 @@ class CalculoService extends ServiceTrait{
         return $intervalo_1 + $intervalo_2 + $intervalo_3 + $intervalo_4;
     }
 
+    /**
+     * Calcula o intervalo entre duas horas para o cálculo trabalhista
+     */
     private function calcularIntervalo($entrada, $saida){
         $inicio = $this->converterHoraEmDecimal($entrada);
         $fim = $this->converterHoraEmDecimal($saida);
@@ -181,6 +187,9 @@ class CalculoService extends ServiceTrait{
         return $horas_noturnas;
     }
 
+    /**
+     * Converte uma hora no formato hh:mm para seu correspondente em horas decimais
+     */
     private function converterHoraEmDecimal($hora){
         if($hora != ''){
             $array_hour = explode(":", $hora);
