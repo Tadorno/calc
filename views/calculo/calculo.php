@@ -2,19 +2,36 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use edwinhaq\simpleloading\SimpleLoading;
+
+SimpleLoading::widget();
 
 $this->title = 'Cálculo';
 
 $script = <<< JS
     let inputs = $('#tabela-lancamento-horas input');
+
     $(document).ready(function(){
-        $(".processar-horas").on("click", function() {
+        $(".processar-horas").on("click", function(event) {
+            event.preventDefault();
             $.ajax({
                 url: '/calculo/processar-horas',
                 type: 'post',
+                dataType: 'json',
                 data: inputs.serialize(),
+                beforeSend: function(json)
+                { 
+                    SimpleLoading.start(); 
+                },
                 success: function (data) {
-                    alert(data);
+                    $.each(JSON.parse(data), function(index, value) {
+                        $("#id_horas_trabalhadas_" + index).text(value["horas_trabalhadas"].toFixed(2));
+                        $("#id_horas_diurnas_" + index).text(value["horas_diurnas"].toFixed(2));
+                        $("#id_horas_noturnas_" + index).text(value["horas_noturnas"].toFixed(2));
+                    });
+                },
+                complete: function(){
+                    SimpleLoading.stop();
                 }
             });
         });
@@ -31,7 +48,9 @@ $this->registerJs($script, \yii\web\View::POS_READY);
         'layout' => 'horizontal'
     ]); ?>
 
-    <div class="panel with-nav-tabs panel-default">
+    <button value="Processar Horas" class="processar-horas btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Processar Horas</button>
+
+    <div class="panel with-nav-tabs panel-default" style="margin-top:15px;">
         <div class="panel-heading">
                 <ul class="nav nav-tabs">
                     <li><a href="#tab1" data-toggle="tab">Pré-cálculo</a></li>
@@ -51,12 +70,18 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 </div>
                 <div class="tab-pane fade in active" id="tab2">
                     <?= $this->render('_lancamento_horas', [
-                        'horasLancadas' => $horasLancadas,
+                        'horasParaLancamento' => $horasParaLancamento,
                         'anosTrabalhados' => $anosTrabalhados,
                         'form' => $form
                     ]) ?>
                 </div>
-                <div class="tab-pane fade" id="tab3">Default 3</div>
+                <div class="tab-pane fade" id="tab3">
+                    <?= $this->render('_resumo_horas', [
+                        'horasParaLancamento' => $horasParaLancamento,
+                        'anosTrabalhados' => $anosTrabalhados,
+                        'form' => $form
+                    ]) ?>
+                </div>
                 <div class="tab-pane fade" id="tab4">Default 4</div>
             </div>
         </div>

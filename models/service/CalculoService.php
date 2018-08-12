@@ -15,6 +15,7 @@ use app\util\MessageUtil;
 use app\util\DateUtil;
 use app\exceptions\PreCalculoNaoIniciadoException;
 use Yii;
+use yii\web\Cookie;
 /**
  * Description of CalculoService
  *
@@ -50,10 +51,15 @@ class CalculoService extends ServiceTrait{
 
             $dadosDeLancamento = $this->montarCamposParaLancamentoDeHoras($preCalculo);
 
+            //Armazena localmente o arquivo json para melhorar a performance para grandes períodos
+            $lancamentoJson = fopen(Yii::$app->basePath . "/tmp/tmp.json", "w");
+            fwrite($lancamentoJson, json_encode($dadosDeLancamento));
+            fclose($lancamentoJson);
+
             $this->getRetorno()->setData([
                 'preCalculo' => $preCalculo,
-                'horasLancadas' => $dadosDeLancamento['horasLancadas'],
-                'anosTrabalhados' => $dadosDeLancamento['anosTrabalhados'],
+                'horasParaLancamento' => current(current($dadosDeLancamento)), //Retorna o primeiro mês do
+                'anosTrabalhados' => array_keys($dadosDeLancamento),
             ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
@@ -62,19 +68,22 @@ class CalculoService extends ServiceTrait{
     }
 
     public function processarHoras(){
-        if (Yii::$app->request->isAjax) {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            
-            $lancamentos = Yii::$app->request->post();
+         
+        $lancamentos = Yii::$app->request->post();
 
-            foreach($lancamentos['LancamentoHoraRecord'] as $key => $lancamento){
-                $lancamentos['LancamentoHoraRecord'][$key]['horas_trabalhadas'] = $this->calcularHorasTrabalhadas($lancamento);
-                $lancamentos['LancamentoHoraRecord'][$key]['horas_noturnas'] = $this->calcularHorasNoturnas($lancamento);
-                
-            }
-            
-            return json_encode($lancamentos);
+        $response = array();
+        foreach($lancamentos['LancamentoHoraRecord'] as $key => $lancamento){
+            $response[$key]['horas_trabalhadas'] = $this->calcularHorasTrabalhadas($lancamento);
+            $response[$key]['horas_noturnas'] = $this->calcularHorasNoturnas($lancamento);
+            $response[$key]['horas_diurnas'] = $response[$key]['horas_trabalhadas'] - $response[$key]['horas_noturnas'] ;
+        
         }
+        
+        return json_encode($response);  
+    }
+
+    private function calcularHorasExtras($lancamento){
+
     }
 
     /**
@@ -206,9 +215,7 @@ class CalculoService extends ServiceTrait{
 
         $dataInicioContagem = $dataAdmissao < $dataPrescricao ? $dataPrescricao : $dataAdmissao;
 
-        $horasLancadas = array();
-
-        $anosTrabalhados = array();
+        $horasParaLancamento = array();
 
         if($dataAfastamento > $dataInicioContagem){
             $intervalo = $dataInicioContagem->diff($dataAfastamento);
@@ -221,18 +228,46 @@ class CalculoService extends ServiceTrait{
                 }
 
                 $ano = $dataInicioContagem->format('Y');
+                $mes = $dataInicioContagem->format('m');
 
-                if(!in_array($ano, $anosTrabalhados)){
-                    array_push($anosTrabalhados, $ano);
+                if(!array_key_exists($ano, $horasParaLancamento)){
+                    $horasParaLancamento[$ano] = array();
                 }
 
-                $lancamento = new LancamentoHoraRecord();
-                $lancamento->iniciarData($dataInicioContagem);
+                if(!array_key_exists($mes, $horasParaLancamento[$ano])){
+                    $horasParaLancamento[$ano][$mes] = array();
+                }
 
-                array_push($horasLancadas, $lancamento);
+                array_push($horasParaLancamento[$ano][$mes], $this->fillLancamento($dataInicioContagem));
             }
         }
 
-        return [ 'horasLancadas' => $horasLancadas, 'anosTrabalhados' => $anosTrabalhados];
+        return $horasParaLancamento;
     }
+
+    private function fillLancamento($date){
+
+        $lancamento = [
+
+            'data' => $date->format('d/m/Y'),
+            'entrada_1' => "",
+            'saida_1' => "",
+            'entrada_2' => "",
+            'saida_2' => "",
+            'entrada_3' => "",
+            'saida_3' => "",
+            'entrada_4' => "",
+            'saida_4' => "",
+            'horas_trabalhadas' => "",
+            'horas_noturnas' => "",
+            'horas_diurnas' => "",
+            'dia_da_demana' => DateUtil::getDiaDaSemana($date),
+            'dia' => $date->format('d'),
+            'mes' => $date->format('M'),
+            'ano' => $date->format('Y')
+        ];
+
+        return $lancamento;
+    }
+
 }

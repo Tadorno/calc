@@ -58,7 +58,7 @@ class CalculoController extends ControllerTrait
 
             return $this->render('calculo', [
                 'preCalculo' => $data["preCalculo"],
-                'horasLancadas' => $data["horasLancadas"],
+                'horasParaLancamento' => $data["horasParaLancamento"],
                 'anosTrabalhados' => $data["anosTrabalhados"],
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
@@ -69,9 +69,11 @@ class CalculoController extends ControllerTrait
     }
 
     public function actionProcessarHoras(){
-
-        return $this->getService()->processarHoras();
-
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            
+            return $this->getService()->processarHoras();
+        }
     }
     
 }
