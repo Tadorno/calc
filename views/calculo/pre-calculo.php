@@ -5,6 +5,9 @@ use yii\bootstrap\ActiveForm;
 use yii\jui\DatePicker;
 use yii\bootstrap\Modal;
 use app\util\MessageUtil;
+use edwinhaq\simpleloading\SimpleLoading;
+
+SimpleLoading::widget();
 
 $this->title = 'Pré-Cálculo';
 
@@ -17,6 +20,7 @@ $script = <<< JS
 
         $("#confirm-pre-calc").on("click", function(event) {
             $("#confirm-form").val("true");
+            SimpleLoading.start(); 
             $('#id-pre-calculo-form').submit();
         });
 

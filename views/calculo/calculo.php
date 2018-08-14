@@ -72,6 +72,8 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     <?= $this->render('_lancamento_horas', [
                         'horasParaLancamento' => $horasParaLancamento,
                         'anosTrabalhados' => $anosTrabalhados,
+                        'mesPaginado' => $mesPaginado,
+                        'anoPaginado' => $anoPaginado,
                         'form' => $form
                     ]) ?>
                 </div>

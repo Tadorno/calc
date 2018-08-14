@@ -60,6 +60,8 @@ class CalculoController extends ControllerTrait
                 'preCalculo' => $data["preCalculo"],
                 'horasParaLancamento' => $data["horasParaLancamento"],
                 'anosTrabalhados' => $data["anosTrabalhados"],
+                'anoPaginado' => $data["anoPaginado"],
+                'mesPaginado' => $data["mesPaginado"]
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));

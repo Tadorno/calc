@@ -60,6 +60,8 @@ class CalculoService extends ServiceTrait{
                 'preCalculo' => $preCalculo,
                 'horasParaLancamento' => current(current($dadosDeLancamento)), //Retorna o primeiro mês do
                 'anosTrabalhados' => array_keys($dadosDeLancamento),
+                'anoPaginado' => array_keys($dadosDeLancamento)[0],
+                'mesPaginado' => key(current($dadosDeLancamento))
             ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
@@ -217,7 +219,7 @@ class CalculoService extends ServiceTrait{
 
         $horasParaLancamento = array();
 
-        if($dataAfastamento > $dataInicioContagem){
+        if($dataAfastamento >= $dataInicioContagem){
             $intervalo = $dataInicioContagem->diff($dataAfastamento);
 
             
