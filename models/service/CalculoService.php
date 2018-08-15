@@ -60,6 +60,7 @@ class CalculoService extends ServiceTrait{
                 'preCalculo' => $preCalculo,
                 'horasParaLancamento' => current(current($dadosDeLancamento)), //Retorna o primeiro mês do
                 'anosTrabalhados' => array_keys($dadosDeLancamento),
+                'mesesTrabalhadosNoAno' => array_keys(current($dadosDeLancamento)),
                 'anoPaginado' => array_keys($dadosDeLancamento)[0],
                 'mesPaginado' => key(current($dadosDeLancamento))
             ]);
@@ -68,6 +69,58 @@ class CalculoService extends ServiceTrait{
         }
         return $this->getRetorno();
     }
+
+    public function mudarAba(){
+
+        $post = Yii::$app->request->post();
+
+        if($post){
+            
+            $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+
+            $lancamentoJson = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+
+            $lancamentoJson = $this->atualizarJsonLancamento($lancamentoJson, $post);
+
+            if(file_put_contents($jsonFile, json_encode($lancamentoJson))) {
+                
+                $this->getRetorno()->setData([
+                    'horasParaLancamento' => current($lancamentoJson[$post['ano']]), //Retorna o primeiro mês do
+                    'anosTrabalhados' => array_keys($lancamentoJson),
+                    'mesesTrabalhadosNoAno' => array_keys($lancamentoJson[$post['ano']]),
+                    'anoPaginado' => $post['ano'],
+                    'mesPaginado' => key($lancamentoJson[$post['ano']])
+                ]);
+                
+            }else {
+                throw new \Exception("Erro ao modificar arquivo de lançamento");
+            }
+
+            return $this->getRetorno();
+        }
+    }
+
+    public function atualizarJsonLancamento($json, $post){
+        //Atualiza o Json com o resultado inputado
+        $ano = $post['anoPaginado'];
+        $mes = !isset($post['mesPaginado']) ? $post['mesPaginado'] : key(current($json));
+
+
+        foreach($json[$ano][$mes] as $key => $lancamento){
+            $json[$ano][$mes][$key]['entrada_1'] = $post['LancamentoHoraRecord'][$key]['entrada_1'];
+            $json[$ano][$mes][$key]['entrada_2'] = $post['LancamentoHoraRecord'][$key]['entrada_2'];
+            $json[$ano][$mes][$key]['entrada_3'] = $post['LancamentoHoraRecord'][$key]['entrada_3'];
+            $json[$ano][$mes][$key]['entrada_4'] = $post['LancamentoHoraRecord'][$key]['entrada_4'];
+
+            $json[$ano][$mes][$key]['saida_1'] = $post['LancamentoHoraRecord'][$key]['saida_1'];
+            $json[$ano][$mes][$key]['saida_2'] = $post['LancamentoHoraRecord'][$key]['saida_2'];
+            $json[$ano][$mes][$key]['saida_3'] = $post['LancamentoHoraRecord'][$key]['saida_3'];
+            $json[$ano][$mes][$key]['saida_4'] = $post['LancamentoHoraRecord'][$key]['saida_4'];
+        }
+
+        return $json;
+    }
+    
 
     public function processarHoras(){
          

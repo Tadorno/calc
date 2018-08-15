@@ -60,6 +60,7 @@ class CalculoController extends ControllerTrait
                 'preCalculo' => $data["preCalculo"],
                 'horasParaLancamento' => $data["horasParaLancamento"],
                 'anosTrabalhados' => $data["anosTrabalhados"],
+                'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
                 'mesPaginado' => $data["mesPaginado"]
             ]);
@@ -75,6 +76,25 @@ class CalculoController extends ControllerTrait
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             
             return $this->getService()->processarHoras();
+        }
+    }
+
+    public function actionMudarAbaLancamentoHoras(){
+        try{
+            $retorno = $this->getService()->mudarAba();
+            $data = $retorno->getData();
+
+            return $this->renderPartial('_lancamento_horas', [
+                'horasParaLancamento' => $data["horasParaLancamento"],
+                'anosTrabalhados' => $data["anosTrabalhados"],
+                'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
+                'anoPaginado' => $data["anoPaginado"],
+                'mesPaginado' => $data["mesPaginado"]
+            ]);
+        }catch(\Exception $e){
+            $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));
+
+            return $this->redirect(['pre-calculo']);
         }
     }
     

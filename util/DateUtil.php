@@ -33,6 +33,21 @@ class DateUtil {
         'Dec' => 'Dezembro'
     );
 
+    const mes_ptBR = array(
+        '01' => 'Jan',
+        '02' => 'Fev',
+        '03' => 'Mar',
+        '04' => 'Abr',
+        '05' => 'Mai',
+        '06' => 'Jun',
+        '07' => 'Jun',
+        '08' => 'Ago',
+        '09' => 'Set',
+        '10' => 'Out',
+        '11' => 'Nov',
+        '12' => 'Dez'
+    );
+
     public static function getDiaDaSemana(\DateTime $date){
         $diaDaSemana = $date->format('D');
         return DateUtil::semana["$diaDaSemana"];
