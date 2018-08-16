@@ -9,7 +9,6 @@ SimpleLoading::widget();
 $this->title = 'Cálculo';
 
 $script = <<< JS
-    var inputs = $('#tabela-lancamento-horas input');
 
     $(document).ready(function(){
         $(".processar-horas").on("click", function(event) {
@@ -37,12 +36,18 @@ $script = <<< JS
         });
 
         $('#tab_lancamento_hora').on('click', '.mudar-ano', function() {
-            event.preventDefault();
+            //event.preventDefault();
             mudarAba($(this).data("ano"), null);
         });
 
+        $('#tab_lancamento_hora').on('click', '.mudar-mes', function() {
+            //event.preventDefault();
+            mudarAba($(this).data("ano"), $(this).data("mes"));
+        });
+
         function mudarAba(ano, mes){
-            var input = inputs.serializeArray();
+
+            var input = $('#tabela-lancamento-horas input').serializeArray();
             
             input.push({name: "anoPaginado", value: $("#anoPaginado").val()});//Ano atual
             input.push({name: "mesPaginado", value: $("#mesPaginado").val()});//Mes Atual

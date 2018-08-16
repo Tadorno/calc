@@ -83,7 +83,7 @@ class CalculoController extends ControllerTrait
         try{
             $retorno = $this->getService()->mudarAba();
             $data = $retorno->getData();
-
+ 
             return $this->renderPartial('_lancamento_horas', [
                 'horasParaLancamento' => $data["horasParaLancamento"],
                 'anosTrabalhados' => $data["anosTrabalhados"],
@@ -93,7 +93,7 @@ class CalculoController extends ControllerTrait
             ]);
         }catch(\Exception $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));
-
+            print_r($e);
             return $this->redirect(['pre-calculo']);
         }
     }

@@ -11,7 +11,7 @@ use app\util\DateUtil;
                 foreach ($mesesTrabalhadosNoAno as $value){
             ?>       
 
-            <li id="tab_<?= $anoPaginado ?>_<?= $value ?>" <?= $value == $mesPaginado ? 'class="active"' : '' ?>><a href="#tab_<?= $anoPaginado ?>_<?= $value ?>" data-toggle="tab"><?= DateUtil::mes_ptBR[$value] ?></a></li>
+            <li id="tab_<?= $anoPaginado ?>_<?= $value ?>" data-ano=<?= $anoPaginado ?> data-mes=<?= $value ?> class="<?= $value == $mesPaginado ? 'active mudar-mes' : 'mudar-mes' ?>"><a href="#tab_<?= $anoPaginado ?>_<?= $value ?>" data-toggle="tab"><?= DateUtil::mes_ptBR[$value] ?></a></li>
 
             <?php };?>
         </ul>

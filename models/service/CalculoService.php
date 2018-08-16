@@ -81,15 +81,17 @@ class CalculoService extends ServiceTrait{
             $lancamentoJson = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
 
             $lancamentoJson = $this->atualizarJsonLancamento($lancamentoJson, $post);
+           // exit;
 
             if(file_put_contents($jsonFile, json_encode($lancamentoJson))) {
-                
+                $mes = $post['mes'] != null ? $post['mes'] : key($lancamentoJson[$post['ano']]);
+
                 $this->getRetorno()->setData([
-                    'horasParaLancamento' => current($lancamentoJson[$post['ano']]), //Retorna o primeiro mês do
+                    'horasParaLancamento' => $lancamentoJson[$post['ano']][$mes], //Retorna o primeiro mês do
                     'anosTrabalhados' => array_keys($lancamentoJson),
                     'mesesTrabalhadosNoAno' => array_keys($lancamentoJson[$post['ano']]),
                     'anoPaginado' => $post['ano'],
-                    'mesPaginado' => key($lancamentoJson[$post['ano']])
+                    'mesPaginado' => $mes
                 ]);
                 
             }else {
@@ -103,19 +105,26 @@ class CalculoService extends ServiceTrait{
     public function atualizarJsonLancamento($json, $post){
         //Atualiza o Json com o resultado inputado
         $ano = $post['anoPaginado'];
-        $mes = !isset($post['mesPaginado']) ? $post['mesPaginado'] : key(current($json));
-
+        $mes = $post['mesPaginado'];
 
         foreach($json[$ano][$mes] as $key => $lancamento){
-            $json[$ano][$mes][$key]['entrada_1'] = $post['LancamentoHoraRecord'][$key]['entrada_1'];
-            $json[$ano][$mes][$key]['entrada_2'] = $post['LancamentoHoraRecord'][$key]['entrada_2'];
-            $json[$ano][$mes][$key]['entrada_3'] = $post['LancamentoHoraRecord'][$key]['entrada_3'];
-            $json[$ano][$mes][$key]['entrada_4'] = $post['LancamentoHoraRecord'][$key]['entrada_4'];
+            $json[$ano][$mes][$key]['entrada_1'] 
+                = $post['LancamentoHoraRecord'][$key]['entrada_1'];
+            $json[$ano][$mes][$key]['entrada_2'] 
+                = $post['LancamentoHoraRecord'][$key]['entrada_2'];
+            $json[$ano][$mes][$key]['entrada_3'] 
+                = $post['LancamentoHoraRecord'][$key]['entrada_3'];
+            $json[$ano][$mes][$key]['entrada_4'] 
+                = $post['LancamentoHoraRecord'][$key]['entrada_4'];
 
-            $json[$ano][$mes][$key]['saida_1'] = $post['LancamentoHoraRecord'][$key]['saida_1'];
-            $json[$ano][$mes][$key]['saida_2'] = $post['LancamentoHoraRecord'][$key]['saida_2'];
-            $json[$ano][$mes][$key]['saida_3'] = $post['LancamentoHoraRecord'][$key]['saida_3'];
-            $json[$ano][$mes][$key]['saida_4'] = $post['LancamentoHoraRecord'][$key]['saida_4'];
+            $json[$ano][$mes][$key]['saida_1'] 
+                = $post['LancamentoHoraRecord'][$key]['saida_1'];
+            $json[$ano][$mes][$key]['saida_2']
+                = $post['LancamentoHoraRecord'][$key]['saida_2'];
+            $json[$ano][$mes][$key]['saida_3'] 
+                = $post['LancamentoHoraRecord'][$key]['saida_3'];
+            $json[$ano][$mes][$key]['saida_4'] 
+                = $post['LancamentoHoraRecord'][$key]['saida_4'];
         }
 
         return $json;
