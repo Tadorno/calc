@@ -35,13 +35,11 @@ $script = <<< JS
             });
         });
 
-        $('#tab_lancamento_hora').on('click', '.mudar-ano', function() {
-            //event.preventDefault();
+        $('#tab-lancamento-hora').on('click', '.mudar-ano', function(event) {
             mudarAba($(this).data("ano"), null);
         });
 
-        $('#tab_lancamento_hora').on('click', '.mudar-mes', function() {
-            //event.preventDefault();
+        $('#tab-lancamento-hora').on('click', '.mudar-mes', function(event) {
             mudarAba($(this).data("ano"), $(this).data("mes"));
         });
 
@@ -60,13 +58,14 @@ $script = <<< JS
                 data: input,
                 beforeSend: function()
                 { 
-                    SimpleLoading.start(); 
+                   // SimpleLoading.start(); 
                 },
                 success: function (data) {
-                   $("#tab_lancamento_hora").html(data);
+                   $("#tab-lancamento-hora").html(data);
                 },
                 complete: function(){
-                    SimpleLoading.stop();
+                    $("#tab-lancamento-hora .hora").inputmask("hh:mm");
+                   // SimpleLoading.stop();
                 }
             });
         }
@@ -88,22 +87,22 @@ $this->registerJs($script, \yii\web\View::POS_READY);
     <div class="panel with-nav-tabs panel-default" style="margin-top:15px;">
         <div class="panel-heading">
                 <ul class="nav nav-tabs">
-                    <li><a href="#tab1" data-toggle="tab">Pré-cálculo</a></li>
-                    <li class="active"><a href="#tab_lancamento_hora" data-toggle="tab">Lançamento de horas</a></li>
-                    <li><a href="#tab3" data-toggle="tab">Resumo de horas</a></li>
+                    <li><a href="#tab-review" data-toggle="tab">Pré-cálculo</a></li>
+                    <li class="active"><a href="#tab-lancamento-hora" data-toggle="tab">Lançamento de horas</a></li>
+                    <li><a href="#tab-resumo-hora" data-toggle="tab">Resumo de horas</a></li>
                     <li><a href="#tab4" data-toggle="tab">Default 4</a></li>
                 </ul>
         </div>
         <div class="panel-body">
             <div class="tab-content">
-                <div class="tab-pane fade" id="tab1">
+                <div class="tab-pane fade" id="tab-review">
                     <?= $this->render('_pre_calculo_review', [
                         'model' => $preCalculo,
                         'makeHidden' => true,
                         'form' => $form
                     ]) ?>
                 </div>
-                <div class="tab-pane fade in active" id="tab_lancamento_hora">
+                <div class="tab-pane fade in active" id="tab-lancamento-hora">
                     <?= $this->render('_lancamento_horas', [
                         'horasParaLancamento' => $horasParaLancamento,
                         'anosTrabalhados' => $anosTrabalhados,
@@ -112,12 +111,10 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                         'anoPaginado' => $anoPaginado
                     ]) ?>
                 </div>
-                <div class="tab-pane fade" id="tab3">
-                    <?= $this->render('_resumo_horas', [
-                        'horasParaLancamento' => $horasParaLancamento,
-                        'anosTrabalhados' => $anosTrabalhados,
-                        'form' => $form
-                    ]) ?>
+                <div class="tab-pane fade" id="tab-resumo-hora">
+                    <div class="jumbotron">
+                        <p class="lead">Imputação de horas não processada.</p>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="tab4">Default 4</div>
             </div>
