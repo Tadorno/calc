@@ -70,6 +70,12 @@ $script = <<< JS
                 }
             });
         }
+
+        $('#tab-resumo-hora').on('click', '.treeview-item', function(event) {
+            console.log("foi")
+            //nodeid = $(this).data('nodeid');
+           // $("#treeview ."nodeid).removeClass("hide");
+        });
     }); 
 JS;
 $this->registerJs($script, \yii\web\View::POS_READY);

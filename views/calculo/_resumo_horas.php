@@ -1,20 +1,7 @@
 <?php
 
 use app\util\DateUtil;
-$script = <<< JS
 
-    $(document).ready(function(){
-        $("#tab-resumo-hora").on("click", function(event) {
-            console.log("aaa")
-        });
-        $('#treeview').on('click', '.treeview-item', function(event) {
-            console.log("foi")
-            //nodeid = $(this).data('nodeid');
-           // $("#treeview ."nodeid).removeClass("hide");
-        });
-    }); 
-JS;
-$this->registerJs($script, \yii\web\View::POS_READY);
 ?>
 
 <?php if(!isset($resumoHoras)){ ?>
@@ -26,7 +13,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
 <div class="treeview" id="treeview">
     <ul class="list-group">
     <?php foreach ($resumoHoras as $anoKey => $anoValues){ ?>
-        <li class="list-group-item node-treeview treeview-item">
+        <li class="list-group-item node-treevie">
             <div data-nodeid="ano_<?php $anoKey ?>" class="treeview-item">
                 <span class="icon expand-icon glyphicon glyphicon-minus"></span>
                 <b><?= $anoKey ?>:
