@@ -13,6 +13,8 @@ use app\assets\AppAsset;
 AppAsset::register($this);
 $this->registerJsFile("@web/js/jquery.inputmask.bundle.min.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
 
+$this->registerCssFile("@web/css/bootstrap-treeview.min.css");
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

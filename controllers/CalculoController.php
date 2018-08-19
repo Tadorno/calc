@@ -72,10 +72,19 @@ class CalculoController extends ControllerTrait
     }
 
     public function actionProcessarHoras(){
-        if (Yii::$app->request->isAjax) {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        try{
             
-            return $this->getService()->processarHoras();
+            $retorno = $this->getService()->processarHoras();
+            $data = $retorno->getData();
+
+            return $this->renderPartial('_resumo_horas', [
+                'resumoHoras' => $data["resumoHoras"]
+            ]);
+
+        }catch(\Exception $e){
+            $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));
+            print_r($e);
+            return $this->redirect(['pre-calculo']);
         }
     }
 

@@ -75,15 +75,10 @@ class CalculoService extends ServiceTrait{
         $post = Yii::$app->request->post();
 
         if($post){
-            
-            $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
 
-            $lancamentoJson = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+            $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
 
-            $lancamentoJson = $this->atualizarJsonLancamento($lancamentoJson, $post);
-           // exit;
-
-            if(file_put_contents($jsonFile, json_encode($lancamentoJson))) {
+            if($this->setLancamentoJson($lancamentoJson)) {
                 $mes = $post['mes'] != null ? $post['mes'] : key($lancamentoJson[$post['ano']]);
 
                 $this->getRetorno()->setData([
@@ -133,17 +128,70 @@ class CalculoService extends ServiceTrait{
 
     public function processarHoras(){
          
-        $lancamentos = Yii::$app->request->post();
+        $post = Yii::$app->request->post();
 
-        $response = array();
-        foreach($lancamentos['LancamentoHoraRecord'] as $key => $lancamento){
-            $response[$key]['horas_trabalhadas'] = $this->calcularHorasTrabalhadas($lancamento);
-            $response[$key]['horas_noturnas'] = $this->calcularHorasNoturnas($lancamento);
-            $response[$key]['horas_diurnas'] = $response[$key]['horas_trabalhadas'] - $response[$key]['horas_noturnas'] ;
-        
+        if($post){
+            $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
+
+            if($this->setLancamentoJson($lancamentoJson)) {
+                $response = array();
+
+                foreach($lancamentoJson as $anoKey => $anoValues){
+                    $totalizadorAno = [
+                        'horas_trabalhadas' => 0,
+                        'horas_noturnas' => 0,
+                        'horas_diurnas' => 0
+                    ];
+                    foreach($anoValues as $mesKey => $mesValues){
+                        $totalizadorMes = [
+                            'horas_trabalhadas' => 0,
+                            'horas_noturnas' => 0,
+                            'horas_diurnas' => 0
+                        ];
+                        foreach($mesValues as $diaKey => $lancamento){
+                            $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
+                            $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
+                            $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
+                            
+                            $response[$anoKey][$mesKey][$diaKey] = [
+                                'data' => $lancamento['data'],
+                                'dia_da_semana' => $lancamento['dia_da_semana'],
+                                'horas_trabalhadas' => $horas_trabalhadas,
+                                'horas_noturnas' => $horas_noturnas,
+                                'horas_diurnas' => $horas_diurnas
+                            ];
+
+                            $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $response[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
+                            $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $response[$anoKey][$mesKey][$diaKey], $anoKey);
+                        
+                        }
+                        $response[$anoKey][$mesKey]['total'] = $totalizadorMes;
+                    }
+                    $response[$anoKey]['total'] = $totalizadorAno;
+                }
+                $this->getRetorno()->setData(['resumoHoras' => $response]);
+                return $this->getRetorno();
+            }else {
+                throw new \Exception("Erro ao modificar arquivo de lançamento");
+            }
         }
         
-        return json_encode($response);  
+    }
+
+    private function totalizadorDeMes($totalizador, $resumoDiario, $anoKey, $mesKey){
+        $totalizador['horas_trabalhadas'] += $resumoDiario['horas_trabalhadas'];
+        $totalizador['horas_noturnas'] += $resumoDiario['horas_noturnas'];
+        $totalizador['horas_diurnas'] += $resumoDiario['horas_diurnas'];
+
+        return $totalizador;
+    }
+
+    private function totalizadorDeAnos($totalizador, $resumoDiario, $anoKey){
+        $totalizador['horas_trabalhadas'] += $resumoDiario['horas_trabalhadas'];
+        $totalizador['horas_noturnas'] += $resumoDiario['horas_noturnas'];
+        $totalizador['horas_diurnas'] += $resumoDiario['horas_diurnas'];
+
+        return $totalizador;
     }
 
     private function calcularHorasExtras($lancamento){
@@ -293,6 +341,7 @@ class CalculoService extends ServiceTrait{
 
                 $ano = $dataInicioContagem->format('Y');
                 $mes = $dataInicioContagem->format('m');
+                $dia = $dataInicioContagem->format('d');
 
                 if(!array_key_exists($ano, $horasParaLancamento)){
                     $horasParaLancamento[$ano] = array();
@@ -302,11 +351,23 @@ class CalculoService extends ServiceTrait{
                     $horasParaLancamento[$ano][$mes] = array();
                 }
 
-                array_push($horasParaLancamento[$ano][$mes], $this->fillLancamento($dataInicioContagem));
+                $horasParaLancamento[$ano][$mes][$dia] = $this->fillLancamento($dataInicioContagem);
             }
         }
 
         return $horasParaLancamento;
+    }
+
+    private function getLancamentoJson(){
+        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+
+        return json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+    }
+
+    private function setLancamentoJson($lancamentoJson){
+        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+
+        return file_put_contents($jsonFile, json_encode($lancamentoJson));
     }
 
     private function fillLancamento($date){
@@ -325,7 +386,7 @@ class CalculoService extends ServiceTrait{
             'horas_trabalhadas' => "",
             'horas_noturnas' => "",
             'horas_diurnas' => "",
-            'dia_da_demana' => DateUtil::getDiaDaSemana($date),
+            'dia_da_semana' => DateUtil::getDiaDaSemana($date),
             'dia' => $date->format('d'),
             'mes' => $date->format('M'),
             'ano' => $date->format('Y')

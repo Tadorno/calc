@@ -28,12 +28,12 @@ $this->registerJs($script, \yii\web\View::POS_READY);
         <?php 
             foreach ($horasParaLancamento as $key => $lancamento){
 
-                $tipoDia = ($lancamento['dia_da_demana'] == 'Sábado') ? ' sabado': (($lancamento['dia_da_demana'] == 'Domingo') ? ' domingo' : '');
+                $tipoDia = ($lancamento['dia_da_semana'] == 'Sábado') ? ' sabado': (($lancamento['dia_da_semana'] == 'Domingo') ? ' domingo' : '');
             ?>
 
             <tr class="<?= 'ano_'  .$lancamento['ano'] . ' mes_' . $lancamento['mes'] . $tipoDia; ?>" >
                 <td><?= $lancamento['data']; ?></td>
-                <td><?= $lancamento['dia_da_demana']; ?></td>
+                <td><?= $lancamento['dia_da_semana']; ?></td>
                 <td>
                     <input type="input" placeholder="hh:mm" class="hora" id="id_e1_<?= $key ?>" name="LancamentoHoraRecord[<?= $key ?>][entrada_1]" value="<?= $lancamento['entrada_1']?>"/>
                 </td>

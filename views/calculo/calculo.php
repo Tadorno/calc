@@ -13,21 +13,22 @@ $script = <<< JS
     $(document).ready(function(){
         $(".processar-horas").on("click", function(event) {
             event.preventDefault();
+
+            var input = $('#tabela-lancamento-horas input').serializeArray();
+            
+            input.push({name: "anoPaginado", value: $("#anoPaginado").val()});//Ano atual
+            input.push({name: "mesPaginado", value: $("#mesPaginado").val()});//Mes Atual
+
             $.ajax({
                 url: '/calculo/processar-horas',
                 type: 'post',
-                dataType: 'json',
-                data: inputs.serialize(),
-                beforeSend: function(json)
+                data: input,
+                beforeSend: function()
                 { 
                     SimpleLoading.start(); 
                 },
                 success: function (data) {
-                    $.each(JSON.parse(data), function(index, value) {
-                        $("#id_horas_trabalhadas_" + index).text(value["horas_trabalhadas"].toFixed(2));
-                        $("#id_horas_diurnas_" + index).text(value["horas_diurnas"].toFixed(2));
-                        $("#id_horas_noturnas_" + index).text(value["horas_noturnas"].toFixed(2));
-                    });
+                    $("#tab-resumo-hora").html(data);    
                 },
                 complete: function(){
                     SimpleLoading.stop();
@@ -58,14 +59,14 @@ $script = <<< JS
                 data: input,
                 beforeSend: function()
                 { 
-                   // SimpleLoading.start(); 
+                   SimpleLoading.start(); 
                 },
                 success: function (data) {
                    $("#tab-lancamento-hora").html(data);
                 },
                 complete: function(){
                     $("#tab-lancamento-hora .hora").inputmask("hh:mm");
-                   // SimpleLoading.stop();
+                    SimpleLoading.stop();
                 }
             });
         }
@@ -112,9 +113,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     ]) ?>
                 </div>
                 <div class="tab-pane fade" id="tab-resumo-hora">
-                    <div class="jumbotron">
-                        <p class="lead">Imputação de horas não processada.</p>
-                    </div>
+                    <?= $this->render('_resumo_horas') ?>
                 </div>
                 <div class="tab-pane fade" id="tab4">Default 4</div>
             </div>
