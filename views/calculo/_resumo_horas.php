@@ -14,25 +14,25 @@ use app\util\DateUtil;
     <ul class="list-group">
     <?php foreach ($resumoHoras as $anoKey => $anoValues){ ?>
         <li class="list-group-item node-treevie">
-            <div data-nodeid="ano_<?php $anoKey ?>" class="treeview-item">
-                <span class="icon expand-icon glyphicon glyphicon-minus"></span>
+            <div data-nodeid="ano_<?= $anoKey ?>" data-nodesinal="+" class="treeview-item">
+                <span class="icon expand-icon glyphicon glyphicon-plus span_ano_<?= $anoKey ?>"></span>
                 <b><?= $anoKey ?>:
                 <span class="indent"></span>Horas Trabalhadas: <?= number_format($anoValues['total']['horas_trabalhadas'], 2) ?>
                 <span class="indent"></span>Horas Diurnas: <?= number_format($anoValues['total']['horas_diurnas'], 2) ?>
                 <span class="indent"></span>Horas Noturnas: <?= number_format($anoValues['total']['horas_noturnas'], 2) ?></b>
             </div>
 
-            <ul class="list-group ano_<?php $anoKey ?> hide">
+            <ul class="list-group ano_<?= $anoKey ?> hide">
                 <?php foreach ($anoValues as $mesKey => $mesValues){ if($mesKey != 'total'){ ?>
                     <li class="list-group-item node-treeview">
-                        <div data-nodeid="mes_<?php $mesKey ?>" class="treeview-item">
-                            <span class="icon expand-icon glyphicon glyphicon-minus"></span>
+                        <div data-nodeid="mes_<?= $mesKey ?>" data-nodesinal="+" class="treeview-item">
+                            <span class="icon expand-icon glyphicon glyphicon-plus span_mes_<?= $mesKey ?>"></span>
                             <b><?= DateUtil::mes_ptBR[$mesKey] ?>:
                             <span class="indent">Horas Trabalhadas: <?= number_format($mesValues['total']['horas_trabalhadas'], 2) ?>
                             <span class="indent">Horas Diurnas: <?= number_format($mesValues['total']['horas_diurnas'], 2) ?>
                             <span class="indent">Horas Noturnas: <?= number_format($mesValues['total']['horas_noturnas'], 2) ?></b>
                         </div>
-                        <table class="table table-striped mes_<?php $mesKey ?> hide" id="tabela-resumo-horas">
+                        <table class="table table-striped mes_<?= $mesKey ?> hide" id="tabela-resumo-horas">
                             <thead>
                                 <tr>
                                     <th>Data</th>

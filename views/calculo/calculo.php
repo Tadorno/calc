@@ -72,9 +72,21 @@ $script = <<< JS
         }
 
         $('#tab-resumo-hora').on('click', '.treeview-item', function(event) {
-            console.log("foi")
-            //nodeid = $(this).data('nodeid');
-           // $("#treeview ."nodeid).removeClass("hide");
+            nodeid = $(this).data('nodeid');
+            nodesinal = $(this).data('nodesinal');
+
+            if(nodesinal === "+"){
+                $(this).data('nodesinal', '-');
+                $(".span_" + nodeid).removeClass("glyphicon-plus");
+                $(".span_" + nodeid).addClass("glyphicon-minus");
+                $("#treeview ." + nodeid).removeClass("hide");
+            }else{
+                $(this).data('nodesinal', '+');
+                $(".span_" + nodeid).addClass("glyphicon-plus");
+                $(".span_" + nodeid).removeClass("glyphicon-minus");
+                $("#treeview ." + nodeid).addClass("hide");
+            }
+            
         });
     }); 
 JS;
@@ -97,7 +109,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                     <li><a href="#tab-review" data-toggle="tab">Pré-cálculo</a></li>
                     <li class="active"><a href="#tab-lancamento-hora" data-toggle="tab">Lançamento de horas</a></li>
                     <li><a href="#tab-resumo-hora" data-toggle="tab">Resumo de horas</a></li>
-                    <li><a href="#tab4" data-toggle="tab">Default 4</a></li>
+                    
                 </ul>
         </div>
         <div class="panel-body">
@@ -121,7 +133,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 <div class="tab-pane fade" id="tab-resumo-hora">
                     <?= $this->render('_resumo_horas') ?>
                 </div>
-                <div class="tab-pane fade" id="tab4">Default 4</div>
+                
             </div>
         </div>
     </div>
