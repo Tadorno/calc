@@ -130,10 +130,6 @@ a.btn-lg{
     text-decoration: none;
 }
 
-.time{
-    width: 70px;
-}
-
 .sabado{
     background-color: #b3b0b0 !important;
 }
@@ -147,7 +143,7 @@ a.btn-lg{
 }
 
 .hora{
-    width: 60px;
+    width: 70px;
     text-align: center;
 }
 
