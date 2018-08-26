@@ -3,7 +3,7 @@
 namespace app\models;
 
 use \app\util\MessageUtil;
-use app\enums\MesEnum;
+use app\models\enums\MesEnum;
 use Yii;
 
 /**

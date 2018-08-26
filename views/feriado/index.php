@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use app\enums\MesEnum;
+use app\models\enums\MesEnum;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\search\FeriadoSearch */

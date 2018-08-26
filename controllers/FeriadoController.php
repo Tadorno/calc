@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\FeriadoRecord;
-use app\enums\MesEnum;
+use app\models\enums\MesEnum;
 use app\models\service\FeriadoService;
 use app\models\search\FeriadoSearch;
 use yii\web\Controller;

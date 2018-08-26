@@ -1,5 +1,5 @@
 <?php
-namespace app\enums;
+namespace app\models\enums;
 
 abstract class Enum
 {

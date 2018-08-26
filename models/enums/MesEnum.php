@@ -1,5 +1,5 @@
 <?php
-namespace app\enums;
+namespace app\models\enums;
 
 class MesEnum extends Enum {
     
