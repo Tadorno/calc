@@ -13,21 +13,20 @@ A arquitetura do projeto foi modelada a partir da estrutura básica do Yii frame
 
       assets/                           contains assets definition
       commands/                         contains console commands (controllers)
-      components/                       contém os componentes criados para a aplicação
+      components/*                      contém os componentes criados para a aplicação
       config/                           contains application configurations
       controllers/                      contains Web controller classes
-      controllers/ControllerTrait.php   Classe pai de todos os Controllers da aplicação*
+      controllers/ControllerTrait.php*  Classe pai de todos os Controllers da aplicação
       mail/                             contains view files for e-mails
-      models/                           Na pasta raiz existirão apenas classes terminadas em Record(se extenderem ActoveRecord) ou
-                                        Model(se extenderem Model)*
-      models/enums/                     contém os enums do projeto*                                  
-      models/forms/                     contem as entidades que representam forms (Ainda em análise sobre este item)*
-      models/search/                    contem a regra de negócio para as telas de consulta*
-      models/service/                   contem toda a regra de necócio da aplicação*
-      models/service/ServiceTrait.php   Classe pai de todos os Services da aplicação*
+      models/*                          Na pasta raiz existirão apenas classes terminadas em Record(se extenderem ActoveRecord)                  ou Model(se extenderem Model)
+      models/enums/*                    contém os enums do projeto                                  
+      models/forms/*                    contem as entidades que representam forms (Ainda em análise sobre este item)
+      models/search/*                   contem a regra de negócio para as telas de consulta
+      models/service/ *                 contem toda a regra de necócio da aplicação
+      models/service/ServiceTrait.php*  Classe pai de todos os Services da aplicação
       runtime/                          contains files generated during runtime
       tests/                            contains various tests for the basic application
-      util/                             contem classes de utilidade para o projeto
+      util/*                            contem classes de utilidade para o projeto
       vendor/                           contains dependent 3rd-party packages
       views/                            contains view files for the Web application
       web/                              contains the entry script and Web resources
