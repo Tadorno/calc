@@ -131,6 +131,10 @@ class CalculoService extends ServiceTrait{
         $post = Yii::$app->request->post();
 
         if($post){
+            
+            $preCalculo = new PreCalculoRecord();
+            $preCalculo->load(Yii::$app->request->post());
+
             $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
 
             if($this->setLancamentoJson($lancamentoJson)) {
@@ -152,13 +156,15 @@ class CalculoService extends ServiceTrait{
                             $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
                             $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
                             $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
+                            $horas_extras =  $this->calcularHorasExtras($lancamento);
                             
                             $response[$anoKey][$mesKey][$diaKey] = [
                                 'data' => $lancamento['data'],
                                 'dia_da_semana' => $lancamento['dia_da_semana'],
                                 'horas_trabalhadas' => $horas_trabalhadas,
                                 'horas_noturnas' => $horas_noturnas,
-                                'horas_diurnas' => $horas_diurnas
+                                'horas_diurnas' => $horas_diurnas,
+                                'horas_extras' => $horas_extras
                             ];
 
                             $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $response[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
@@ -169,7 +175,18 @@ class CalculoService extends ServiceTrait{
                     }
                     $response[$anoKey]['total'] = $totalizadorAno;
                 }
-                $this->getRetorno()->setData(['resumoHoras' => $response]);
+                
+                $this->getRetorno()->setData([
+                    'horasParaLancamento' => $lancamentoJson[$post['anoPaginado']][$post['mesPaginado']], //Retorna o primeiro mês do
+                    'anosTrabalhados' => array_keys($lancamentoJson),
+                    'mesesTrabalhadosNoAno' => array_keys($lancamentoJson[$post['anoPaginado']]),
+                    'anoPaginado' => $post['anoPaginado'],
+                    'mesPaginado' => $post['mesPaginado'],
+                    'preCalculo' => $preCalculo,
+                    'resumoHoras' => $response,
+                    'mainTab' => $post['main-tab']
+                ]);
+
                 return $this->getRetorno();
             }else {
                 throw new \Exception("Erro ao modificar arquivo de lançamento");
@@ -194,8 +211,12 @@ class CalculoService extends ServiceTrait{
         return $totalizador;
     }
 
-    private function calcularHorasExtras($lancamento){
-
+    /**
+     * Calcula as horas extras de um dia lançado
+     */
+    private function calcularHorasExtras($horasTrabalhadas){
+        $horasSemanais = Yii::$app->params['horas_semanais'];
+        //$horasDiarias = $horasSemanais
     }
 
     /**
@@ -233,6 +254,9 @@ class CalculoService extends ServiceTrait{
         }
     }
 
+    /**
+     * Calcular o intervalo noturno entre duas horas
+     */
     private function calcularIntervaloNortuno($entrada, $saida){
         $inicio = $this->converterHoraEmDecimal($entrada);
         $fim = $this->converterHoraEmDecimal($saida);

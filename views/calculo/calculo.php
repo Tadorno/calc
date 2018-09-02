@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
 use edwinhaq\simpleloading\SimpleLoading;
 
 SimpleLoading::widget();
@@ -14,10 +13,7 @@ $script = <<< JS
         $(".processar-horas").on("click", function(event) {
             event.preventDefault();
 
-            var input = $('#tabela-lancamento-horas input').serializeArray();
-            
-            input.push({name: "anoPaginado", value: $("#anoPaginado").val()});//Ano atual
-            input.push({name: "mesPaginado", value: $("#mesPaginado").val()});//Mes Atual
+            var input = $('#id-calculo-form').serializeArray();
 
             $.ajax({
                 url: '/calculo/processar-horas',
@@ -28,20 +24,29 @@ $script = <<< JS
                     SimpleLoading.start(); 
                 },
                 success: function (data) {
-                    $("#tab-resumo-hora").html(data);    
+                    $("#calculo-content").html(data);    
                 },
                 complete: function(){
+                    $("#tab-lancamento-hora .hora").inputmask("hh:mm");
                     SimpleLoading.stop();
                 }
             });
         });
 
-        $('#tab-lancamento-hora').on('click', '.mudar-ano', function(event) {
-            mudarAba($(this).data("ano"), null);
+        $('#calculo-content').on('click', '.main-tab', function(event) {
+            $("#main-tab").val($(this).data('tab'));
         });
 
-        $('#tab-lancamento-hora').on('click', '.mudar-mes', function(event) {
-            mudarAba($(this).data("ano"), $(this).data("mes"));
+        $('#calculo-content').on('click', '.mudar-ano', function(event) {
+            if($('#anoPaginado').val() != $(this).data("ano")){
+                mudarAba($(this).data("ano"), null);
+            }
+        });
+
+        $('#calculo-content').on('click', '.mudar-mes', function(event) {
+            if($('#mesPaginado').val() != $(this).data("mes")){
+                mudarAba($(this).data("ano"), $(this).data("mes"));
+            }
         });
 
         function mudarAba(ano, mes){
@@ -71,7 +76,8 @@ $script = <<< JS
             });
         }
 
-        $('#tab-resumo-hora').on('click', '.treeview-item', function(event) {
+        $('#calculo-content').on('click', '.treeview-item', function(event) {
+            
             nodeid = $(this).data('nodeid');
             nodesinal = $(this).data('nodesinal');
 
@@ -96,47 +102,21 @@ $this->registerJs($script, \yii\web\View::POS_READY);
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php $form = ActiveForm::begin([
-        'id' => 'id-calculo-form',
-        'layout' => 'horizontal'
-    ]); ?>
-
     <button value="Processar Horas" class="processar-horas btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Processar Horas</button>
 
-    <div class="panel with-nav-tabs panel-default" style="margin-top:15px;">
-        <div class="panel-heading">
-                <ul class="nav nav-tabs">
-                    <li><a href="#tab-review" data-toggle="tab">Pré-cálculo</a></li>
-                    <li class="active"><a href="#tab-lancamento-hora" data-toggle="tab">Lançamento de horas</a></li>
-                    <li><a href="#tab-resumo-hora" data-toggle="tab">Resumo de horas</a></li>
-                    
-                </ul>
-        </div>
-        <div class="panel-body">
-            <div class="tab-content">
-                <div class="tab-pane fade" id="tab-review">
-                    <?= $this->render('_pre_calculo_review', [
-                        'model' => $preCalculo,
-                        'makeHidden' => true,
-                        'form' => $form
-                    ]) ?>
-                </div>
-                <div class="tab-pane fade in active" id="tab-lancamento-hora">
-                    <?= $this->render('_lancamento_horas', [
-                        'horasParaLancamento' => $horasParaLancamento,
-                        'anosTrabalhados' => $anosTrabalhados,
-                        'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
-                        'mesPaginado' => $mesPaginado,
-                        'anoPaginado' => $anoPaginado
-                    ]) ?>
-                </div>
-                <div class="tab-pane fade" id="tab-resumo-hora">
-                    <?= $this->render('_resumo_horas') ?>
-                </div>
-                
-            </div>
-        </div>
-    </div>
+    <div id="calculo-content">
 
-    <?php ActiveForm::end(); ?>
+        <?= $this->render('_calculo_content', [
+            'horasParaLancamento' => $horasParaLancamento,
+            'anosTrabalhados' => $anosTrabalhados,
+            'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
+            'mesPaginado' => $mesPaginado,
+            'anoPaginado' => $anoPaginado,
+            'preCalculo' => $preCalculo,
+            'resumoHoras' => $resumoHoras,
+            'mainTab' => $mainTab
+        ]) ?>
+
+    </div>
+   
 </div>

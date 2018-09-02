@@ -6,15 +6,17 @@ use yii\helpers\Html;
 
 <?php
     if(isset($makeHidden) && $makeHidden){
-        //Adiciona inputs hidden para reencaminhar para o cadastro do cálculo
-        echo $form->field($model, 'processo', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'reclamada', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'reclamante', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'dt_admissao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'dt_afastamento', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'dt_inicial', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'dt_prescricao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
-        echo $form->field($model, 'dt_atualizacao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+        echo '<div id="hidden-preview">';
+            //Adiciona inputs hidden para reencaminhar para o cadastro do cálculo
+            echo $form->field($model, 'processo', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'reclamada', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'reclamante', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'dt_admissao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'dt_afastamento', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'dt_inicial', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'dt_prescricao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+            echo $form->field($model, 'dt_atualizacao', ['template' => '{input}','options' => [ 'class' => '']])->hiddenInput();
+        echo '</div>';
     }
 ?>
 

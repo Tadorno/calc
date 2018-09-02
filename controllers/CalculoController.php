@@ -62,7 +62,9 @@ class CalculoController extends ControllerTrait
                 'anosTrabalhados' => $data["anosTrabalhados"],
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
-                'mesPaginado' => $data["mesPaginado"]
+                'mesPaginado' => $data["mesPaginado"],
+                'resumoHoras' => [],
+                'mainTab' => 'tab-lancamento-hora'
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));
@@ -77,8 +79,15 @@ class CalculoController extends ControllerTrait
             $retorno = $this->getService()->processarHoras();
             $data = $retorno->getData();
 
-            return $this->renderPartial('_resumo_horas', [
-                'resumoHoras' => $data["resumoHoras"]
+            return $this->renderPartial('_calculo_content', [
+                'resumoHoras' => $data["resumoHoras"],
+                'preCalculo' => $data["preCalculo"],
+                'horasParaLancamento' => $data["horasParaLancamento"],
+                'anosTrabalhados' => $data["anosTrabalhados"],
+                'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
+                'anoPaginado' => $data["anoPaginado"],
+                'mesPaginado' => $data["mesPaginado"],
+                'mainTab' => $data['mainTab']
             ]);
 
         }catch(\Exception $e){
