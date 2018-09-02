@@ -5,6 +5,7 @@
     'anosTrabalhados' => $anosTrabalhados,
     'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
     'anoPaginado' => $anoPaginado,
-    'mesPaginado' => $mesPaginado
+    'mesPaginado' => $mesPaginado,
+    'resumoHoras' => $resumoHoras
 ]) ?>
 

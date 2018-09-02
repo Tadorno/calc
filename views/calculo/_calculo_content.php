@@ -17,7 +17,6 @@
         <ul class="nav nav-tabs">
             <li <?= $mainTab == 'tab-review' ? 'class="active"' : '' ?>><a href="#tab-review" data-toggle="tab" data-tab="tab-review" class="main-tab">Pré-cálculo</a></li>
             <li <?= $mainTab == 'tab-lancamento-hora' ? 'class="active"' : '' ?>><a href="#tab-lancamento-hora" data-toggle="tab" data-tab="tab-lancamento-hora" class="main-tab">Lançamento de horas</a></li>
-            <li <?= $mainTab == 'tab-resumo-hora' ? 'class="active"' : '' ?>><a href="#tab-resumo-hora" data-toggle="tab" data-tab="tab-resumo-hora" class="main-tab">Resumo de horas</a></li>
             <li <?= $mainTab == 'tab-apuracao' ? 'class="active"' : '' ?> ><a href="#tab-apuracao" data-toggle="tab" data-tab="tab-apuracao" class="main-tab">Apuração</a></li>
         </ul>
     </div>
@@ -36,13 +35,9 @@
                     'anosTrabalhados' => $anosTrabalhados,
                     'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
                     'mesPaginado' => $mesPaginado,
-                    'anoPaginado' => $anoPaginado
-                ]) ?>
-            </div>
-            <div class="tab-pane fade <?= $mainTab == 'tab-resumo-hora' ? 'in active' : '' ?>" id="tab-resumo-hora">
-                <?= $this->render('_resumo_horas',[
+                    'anoPaginado' => $anoPaginado,
                     'resumoHoras' => $resumoHoras
-                ] ) ?>
+                ]) ?>
             </div>
             <div class="tab-pane fade <?= $mainTab == 'tab-apuracao' ? 'in active' : '' ?>" id="tab-apuracao">
                 <?= $this->render('_apuracao') ?>

@@ -6,21 +6,29 @@
                 foreach ($anosTrabalhados as $value){
             ?>       
 
-            <li id="tab_<?= $value ?>" data-ano=<?= $value ?> class="<?= $value == $anoPaginado ? 'active mudar-ano' : 'mudar-ano' ?>"><a href="#tab_<?= $value ?>" data-toggle="tab"><?= $value ?></a></li>
+            <li id="tab_<?= $value ?>" data-ano=<?= $value ?> class="<?= $value == $anoPaginado ? 'active mudar-ano' : 'mudar-ano' ?>"><a href="#tab_ano" data-toggle="tab"><?= $value ?></a></li>
 
             <?php };?>
+            <li><a href="#tab-resumo-hora" data-toggle="tab" data-tab="tab-resumo-hora">Resumo de horas</a></li>
         </ul>
     </div>
     <div class="panel-body">
         <div class="tab-content">
-            
-        <?= $this->render('_partial_mes', [
-            'horasParaLancamento' => $horasParaLancamento,
-            'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
-            'mesPaginado' => $mesPaginado,
-            'anoPaginado' => $anoPaginado
-        ]) ?>
-            
+
+            <div class="tab-pane fade in active" id="tab_ano"> 
+                <?= $this->render('_partial_mes', [
+                    'horasParaLancamento' => $horasParaLancamento,
+                    'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
+                    'mesPaginado' => $mesPaginado,
+                    'anoPaginado' => $anoPaginado
+                ]) ?>
+            </div>
+
+            <div class="tab-pane fade" id="tab-resumo-hora">
+                <?= $this->render('_resumo_horas',[
+                    'resumoHoras' => $resumoHoras
+                ] ) ?>
+            </div>
         </div>
     </div>
 </div>
