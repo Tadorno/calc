@@ -64,6 +64,7 @@ class CalculoController extends ControllerTrait
                 'anoPaginado' => $data["anoPaginado"],
                 'mesPaginado' => $data["mesPaginado"],
                 'resumoHoras' => [],
+                'apuracao' => [],
                 'mainTab' => 'tab-lancamento-hora'
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
@@ -87,7 +88,8 @@ class CalculoController extends ControllerTrait
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
                 'mesPaginado' => $data["mesPaginado"],
-                'mainTab' => $data['mainTab']
+                'mainTab' => $data['mainTab'],
+                'apuracao' => $data['apuracao'],
             ]);
 
         }catch(\Exception $e){
@@ -102,7 +104,7 @@ class CalculoController extends ControllerTrait
             $retorno = $this->getService()->mudarAba();
             $data = $retorno->getData();
  
-            return $this->renderPartial('_lancamento_horas', [
+            return $this->renderPartial('lancamento-horas/_lancamento_horas', [
                 'horasParaLancamento' => $data["horasParaLancamento"],
                 'anosTrabalhados' => $data["anosTrabalhados"],
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],

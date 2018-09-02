@@ -114,6 +114,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
             'anoPaginado' => $anoPaginado,
             'preCalculo' => $preCalculo,
             'resumoHoras' => $resumoHoras,
+            'apuracao' => $apuracao,
             'mainTab' => $mainTab
         ]) ?>
 

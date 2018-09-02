@@ -138,7 +138,8 @@ class CalculoService extends ServiceTrait{
             $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
 
             if($this->setLancamentoJson($lancamentoJson)) {
-                $response = array();
+                $resumoHoras = array();
+                $apuracao = array();
 
                 foreach($lancamentoJson as $anoKey => $anoValues){
                     $totalizadorAno = [
@@ -152,30 +153,28 @@ class CalculoService extends ServiceTrait{
                             'horas_noturnas' => 0,
                             'horas_diurnas' => 0
                         ];
-                        foreach($mesValues as $diaKey => $lancamento){
-                            $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
-                            $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
-                            $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
-                            $horas_extras =  $this->calcularHorasExtras($lancamento);
-                            
-                            $response[$anoKey][$mesKey][$diaKey] = [
-                                'data' => $lancamento['data'],
-                                'dia_da_semana' => $lancamento['dia_da_semana'],
-                                'horas_trabalhadas' => $horas_trabalhadas,
-                                'horas_noturnas' => $horas_noturnas,
-                                'horas_diurnas' => $horas_diurnas,
-                                'horas_extras' => $horas_extras
-                            ];
 
-                            $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $response[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
-                            $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $response[$anoKey][$mesKey][$diaKey], $anoKey);
-                        
+                        $apuracao[$anoKey][$mesKey] = [
+                            'domingo' => 0,
+                            'seg_sexta' => 0,
+                            'sabado' => 0,
+                            'feriado' =>  0,
+                            'dias_uteis' => 0
+                        ];
+
+                        foreach($mesValues as $diaKey => $lancamento){
+                            $resumoHoras[$anoKey][$mesKey][$diaKey] = $this->calcularResumoHora($lancamento);
+
+                            $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
+                            $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
+                          
+                            $apuracao[$anoKey][$mesKey] = $this->calcularApuracao($apuracao[$anoKey][$mesKey], $resumoHoras[$anoKey][$mesKey][$diaKey]);
                         }
-                        $response[$anoKey][$mesKey]['total'] = $totalizadorMes;
+                        $resumoHoras[$anoKey][$mesKey]['total'] = $totalizadorMes;
                     }
-                    $response[$anoKey]['total'] = $totalizadorAno;
+                    $resumoHoras[$anoKey]['total'] = $totalizadorAno;
                 }
-                
+
                 $this->getRetorno()->setData([
                     'horasParaLancamento' => $lancamentoJson[$post['anoPaginado']][$post['mesPaginado']], //Retorna o primeiro mês do
                     'anosTrabalhados' => array_keys($lancamentoJson),
@@ -183,7 +182,8 @@ class CalculoService extends ServiceTrait{
                     'anoPaginado' => $post['anoPaginado'],
                     'mesPaginado' => $post['mesPaginado'],
                     'preCalculo' => $preCalculo,
-                    'resumoHoras' => $response,
+                    'resumoHoras' => $resumoHoras,
+                    'apuracao' => $apuracao,
                     'mainTab' => $post['main-tab']
                 ]);
 
@@ -193,6 +193,41 @@ class CalculoService extends ServiceTrait{
             }
         }
         
+    }
+
+    private function calcularResumoHora($lancamento){
+        $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
+        $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
+        $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
+        $horas_extras =  $this->calcularHorasExtras($lancamento);  
+
+        return [
+            'data' => $lancamento['data'],
+            'dia_da_semana' => $lancamento['dia_da_semana'],
+            'horas_trabalhadas' => $horas_trabalhadas,
+            'horas_noturnas' => $horas_noturnas,
+            'horas_diurnas' => $horas_diurnas,
+            'horas_extras' => $horas_extras
+        ];
+    }
+
+    private function calcularApuracao($apuracao, $resumoDia){
+        $date = DateUtil::strToDate($resumoDia['data']);
+        $diasUteis = Yii::$app->params['dias_uteis'];
+
+        if(in_array($date->format('N'), $diasUteis)){
+            $apuracao['dias_uteis']++;
+        }
+
+        if($date->format('l') == 'Sunday'){
+            $apuracao['domingo'] += $resumoDia['horas_trabalhadas'];
+        } elseif($date->format('l') == 'Saturday'){
+            $apuracao['sabado'] += $resumoDia['horas_trabalhadas'];
+        } else{
+            $apuracao['seg_sexta'] += $resumoDia['horas_trabalhadas'];
+        }
+
+        return $apuracao;
     }
 
     private function totalizadorDeMes($totalizador, $resumoDiario, $anoKey, $mesKey){
@@ -338,7 +373,10 @@ class CalculoService extends ServiceTrait{
     private function converterHoraEmDecimal($hora){
         if($hora != ''){
             $array_hour = explode(":", $hora);
-            return round(intval($array_hour[0]) + doubleval($array_hour[1] / 60), 2);
+
+            $h = str_replace('h', '0', $array_hour[0]);
+            $m = str_replace('m', '0', $array_hour[1]);
+            return round(intval($h) + doubleval($m / 60), 2);
         } else {
             return 0;
         }

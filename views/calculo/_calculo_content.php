@@ -23,14 +23,14 @@
     <div class="panel-body">
         <div class="tab-content">
             <div class="tab-pane fade <?= $mainTab == 'tab-review' ? 'in active' : '' ?>" id="tab-review">
-                <?= $this->render('_pre_calculo_review', [
+                <?= $this->render('pre-calculo-review/_pre_calculo_review', [
                     'model' => $preCalculo,
                     'makeHidden' => true,
                     'form' => $form
                 ]) ?>
             </div>
             <div class="tab-pane fade <?= $mainTab == 'tab-lancamento-hora' ? 'in active' : '' ?>" id="tab-lancamento-hora">
-                <?= $this->render('_lancamento_horas', [
+                <?= $this->render('lancamento-horas/_lancamento_horas', [
                     'horasParaLancamento' => $horasParaLancamento,
                     'anosTrabalhados' => $anosTrabalhados,
                     'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
@@ -40,7 +40,10 @@
                 ]) ?>
             </div>
             <div class="tab-pane fade <?= $mainTab == 'tab-apuracao' ? 'in active' : '' ?>" id="tab-apuracao">
-                <?= $this->render('_apuracao') ?>
+                <?= $this->render('apuracao/_apuracao', [
+                    'apuracao' => $apuracao,
+                    'anosTrabalhados' => $anosTrabalhados
+                ]) ?>
             </div>
         </div>
     </div>

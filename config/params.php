@@ -6,4 +6,7 @@ return [
     'hr_fim_hora_noturna' => '05:00',
     'divisao_salarial' => '220',
     'horas_semanais' => 40,
+    'dias_uteis' => [
+        1,2,3,4,5
+    ]
 ];

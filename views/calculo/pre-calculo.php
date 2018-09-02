@@ -197,7 +197,7 @@ $this->registerJs($script, \yii\web\View::POS_READY);
                 echo "<h4>Atenção, favor confirmar os dados de entrada para iniciar o cálculo!</h4>";
                 echo "<div id='msg_review'></div>";
 
-                echo $this->render('_pre_calculo_review', [
+                echo $this->render('pre-calculo-review/_pre_calculo_review', [
                     'model' => $model
                 ]);
             echo "</div>";
