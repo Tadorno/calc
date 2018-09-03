@@ -12,25 +12,28 @@ $script = <<< JS
     $(document).ready(function(){
         $(".processar-horas").on("click", function(event) {
             event.preventDefault();
+            $("#main-tab").val($(this).data('tab'));
+            
+            if($('#processar').val() == "true"){
+                var input = $('#id-calculo-form').serializeArray();
 
-            var input = $('#id-calculo-form').serializeArray();
-
-            $.ajax({
-                url: '/calculo/processar-horas',
-                type: 'post',
-                data: input,
-                beforeSend: function()
-                { 
-                    SimpleLoading.start(); 
-                },
-                success: function (data) {
-                    $("#calculo-content").html(data);    
-                },
-                complete: function(){
-                    $("#tab-lancamento-hora .hora").inputmask("hh:mm");
-                    SimpleLoading.stop();
-                }
-            });
+                $.ajax({
+                    url: '/calculo/processar-horas',
+                    type: 'post',
+                    data: input,
+                    beforeSend: function()
+                    { 
+                        SimpleLoading.start(); 
+                    },
+                    success: function (data) {
+                        $("#calculo-content").html(data);    
+                    },
+                    complete: function(){
+                        $("#tab-lancamento-hora .hora").inputmask("hh:mm");
+                        SimpleLoading.stop();
+                    }
+                });
+            }
         });
 
         $('#calculo-content').on('click', '.main-tab', function(event) {
@@ -47,6 +50,10 @@ $script = <<< JS
             if($('#mesPaginado').val() != $(this).data("mes")){
                 mudarAba($(this).data("ano"), $(this).data("mes"));
             }
+        });
+
+        $('#calculo-content').on('change', '.altera-calculo', function(event) {
+            $("#processar").val(true);
         });
 
         function mudarAba(ano, mes){
@@ -101,8 +108,6 @@ $this->registerJs($script, \yii\web\View::POS_READY);
 <div class="calculo-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <button value="Processar Horas" class="processar-horas btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Processar Horas</button>
 
     <div id="calculo-content">
 

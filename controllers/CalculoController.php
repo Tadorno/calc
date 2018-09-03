@@ -109,7 +109,8 @@ class CalculoController extends ControllerTrait
                 'anosTrabalhados' => $data["anosTrabalhados"],
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
-                'mesPaginado' => $data["mesPaginado"]
+                'mesPaginado' => $data["mesPaginado"],
+                'resumoHoras' => [],
             ]);
         }catch(\Exception $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));

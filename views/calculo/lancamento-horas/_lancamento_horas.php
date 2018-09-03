@@ -1,3 +1,5 @@
+<input type="hidden" id="anoPaginado" name="anoPaginado" value = "<?= $anoPaginado; ?>"/>
+<input type="hidden" id="mesPaginado" name="mesPaginado" value = "<?= $mesPaginado; ?>"/>
 
 <div class="panel with-nav-tabs panel-default" style="margin-top:15px;">
     <div class="panel-heading">
@@ -9,7 +11,7 @@
             <li id="tab_<?= $value ?>" data-ano=<?= $value ?> class="<?= $value == $anoPaginado ? 'active mudar-ano' : 'mudar-ano' ?>"><a href="#tab_ano" data-toggle="tab"><?= $value ?></a></li>
 
             <?php };?>
-            <li><a href="#tab-resumo-hora" data-toggle="tab" data-tab="tab-resumo-hora">Resumo de horas</a></li>
+            <li><a href="#tab-resumo-hora" data-toggle="tab" data-tab="tab-resumo-hora" clas="processar-horas">Resumo de horas</a></li>
         </ul>
     </div>
     <div class="panel-body">
