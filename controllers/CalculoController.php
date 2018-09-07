@@ -63,9 +63,10 @@ class CalculoController extends ControllerTrait
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
                 'mesPaginado' => $data["mesPaginado"],
-                'resumoHoras' => [],
-                'apuracao' => [],
-                'mainTab' => 'tab-lancamento-hora'
+                'resumoHoras' => $data["resumoHoras"],
+                'apuracao' => $data["apuracao"],
+                'mainTab' => 'tab-lancamento-hora',
+                'tabLancamento' => $data["anoPaginado"]
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));
@@ -90,6 +91,7 @@ class CalculoController extends ControllerTrait
                 'mesPaginado' => $data["mesPaginado"],
                 'mainTab' => $data['mainTab'],
                 'apuracao' => $data['apuracao'],
+                'tabLancamento' => $data['tabLancamento'],
             ]);
 
         }catch(\Exception $e){
@@ -110,7 +112,8 @@ class CalculoController extends ControllerTrait
                 'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
                 'anoPaginado' => $data["anoPaginado"],
                 'mesPaginado' => $data["mesPaginado"],
-                'resumoHoras' => [],
+                'tabLancamento' => $data['tabLancamento'],
+                'resumoHoras' => $data['resumoHoras']
             ]);
         }catch(\Exception $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));

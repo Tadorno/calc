@@ -10,10 +10,17 @@ $this->title = 'Cálculo';
 $script = <<< JS
 
     $(document).ready(function(){
-        $(".processar-horas").on("click", function(event) {
+        $('#calculo-content').on('click', '.processar-horas', function(event) {
             event.preventDefault();
-            $("#main-tab").val($(this).data('tab'));
-            
+
+            if($(this).data('tab') !== undefined){
+                $("#main-tab").val($(this).data('tab'));
+            }
+
+            if($(this).data('tab-lancamento') !== undefined){
+                $("#tabLancamento").val($(this).data('tab-lancamento')); 
+            }
+
             if($('#processar').val() == "true"){
                 var input = $('#id-calculo-form').serializeArray();
 
@@ -36,12 +43,14 @@ $script = <<< JS
             }
         });
 
-        $('#calculo-content').on('click', '.main-tab', function(event) {
-            $("#main-tab").val($(this).data('tab'));
+        $('#calculo-content').on('click', '.main-tab', function(event) {       
+            $("#main-tab").val($(this).data('tab'));      
         });
 
         $('#calculo-content').on('click', '.mudar-ano', function(event) {
-            if($('#anoPaginado').val() != $(this).data("ano")){
+            $("#tabLancamento").val($(this).data('tab'));  
+
+            if($('#anoPaginado').val() !== $(this).data("ano")){
                 mudarAba($(this).data("ano"), null);
             }
         });
@@ -60,6 +69,7 @@ $script = <<< JS
 
             var input = $('#tabela-lancamento-horas input').serializeArray();
             
+            input.push({name: "tabLancamento", value: $("#tabLancamento").val()});//Aba de lancamento
             input.push({name: "anoPaginado", value: $("#anoPaginado").val()});//Ano atual
             input.push({name: "mesPaginado", value: $("#mesPaginado").val()});//Mes Atual
             input.push({name: "ano", value: ano});//Novo Ano
@@ -120,7 +130,8 @@ $this->registerJs($script, \yii\web\View::POS_READY);
             'preCalculo' => $preCalculo,
             'resumoHoras' => $resumoHoras,
             'apuracao' => $apuracao,
-            'mainTab' => $mainTab
+            'mainTab' => $mainTab,
+            'tabLancamento' => $tabLancamento
         ]) ?>
 
     </div>

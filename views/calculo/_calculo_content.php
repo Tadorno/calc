@@ -34,7 +34,8 @@
                     'mesesTrabalhadosNoAno' => $mesesTrabalhadosNoAno,
                     'mesPaginado' => $mesPaginado,
                     'anoPaginado' => $anoPaginado,
-                    'resumoHoras' => $resumoHoras
+                    'resumoHoras' => $resumoHoras,
+                    'tabLancamento' => $tabLancamento
                 ]) ?>
             </div>
             <div class="tab-pane fade <?= $mainTab == 'tab-apuracao' ? 'in active' : '' ?>" id="tab-apuracao">

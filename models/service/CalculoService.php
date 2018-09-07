@@ -56,13 +56,18 @@ class CalculoService extends ServiceTrait{
             fwrite($lancamentoJson, json_encode($dadosDeLancamento));
             fclose($lancamentoJson);
 
+            $lancamentoJson = $this->getLancamentoJson();
+            $processamento = $this->calcularResumoApuracao($lancamentoJson);
+
             $this->getRetorno()->setData([
                 'preCalculo' => $preCalculo,
                 'horasParaLancamento' => current(current($dadosDeLancamento)), //Retorna o primeiro mês do
                 'anosTrabalhados' => array_keys($dadosDeLancamento),
                 'mesesTrabalhadosNoAno' => array_keys(current($dadosDeLancamento)),
                 'anoPaginado' => array_keys($dadosDeLancamento)[0],
-                'mesPaginado' => key(current($dadosDeLancamento))
+                'mesPaginado' => key(current($dadosDeLancamento)),
+                'resumoHoras' => $processamento['resumoHoras'],
+                'apuracao' => $processamento['apuracao']
             ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
@@ -81,12 +86,16 @@ class CalculoService extends ServiceTrait{
             if($this->setLancamentoJson($lancamentoJson)) {
                 $mes = $post['mes'] != null ? $post['mes'] : key($lancamentoJson[$post['ano']]);
 
+                $processamento = calcularResumoApuracao($lancamentoJson);
+
                 $this->getRetorno()->setData([
                     'horasParaLancamento' => $lancamentoJson[$post['ano']][$mes], //Retorna o primeiro mês do
                     'anosTrabalhados' => array_keys($lancamentoJson),
                     'mesesTrabalhadosNoAno' => array_keys($lancamentoJson[$post['ano']]),
                     'anoPaginado' => $post['ano'],
-                    'mesPaginado' => $mes
+                    'mesPaginado' => $mes,
+                    'tabLancamento' => $post['tabLancamento'],
+                    'resumoHoras' => $processamento['resumoHoras']
                 ]);
                 
             }else {
@@ -138,42 +147,8 @@ class CalculoService extends ServiceTrait{
             $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
 
             if($this->setLancamentoJson($lancamentoJson)) {
-                $resumoHoras = array();
-                $apuracao = array();
 
-                foreach($lancamentoJson as $anoKey => $anoValues){
-                    $totalizadorAno = [
-                        'horas_trabalhadas' => 0,
-                        'horas_noturnas' => 0,
-                        'horas_diurnas' => 0
-                    ];
-                    foreach($anoValues as $mesKey => $mesValues){
-                        $totalizadorMes = [
-                            'horas_trabalhadas' => 0,
-                            'horas_noturnas' => 0,
-                            'horas_diurnas' => 0
-                        ];
-
-                        $apuracao[$anoKey][$mesKey] = [
-                            'domingo' => 0,
-                            'seg_sexta' => 0,
-                            'sabado' => 0,
-                            'feriado' =>  0,
-                            'dias_uteis' => 0
-                        ];
-
-                        foreach($mesValues as $diaKey => $lancamento){
-                            $resumoHoras[$anoKey][$mesKey][$diaKey] = $this->calcularResumoHora($lancamento);
-
-                            $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
-                            $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
-                          
-                            $apuracao[$anoKey][$mesKey] = $this->calcularApuracao($apuracao[$anoKey][$mesKey], $resumoHoras[$anoKey][$mesKey][$diaKey]);
-                        }
-                        $resumoHoras[$anoKey][$mesKey]['total'] = $totalizadorMes;
-                    }
-                    $resumoHoras[$anoKey]['total'] = $totalizadorAno;
-                }
+                $processamento = $this->calcularResumoApuracao($lancamentoJson);
 
                 $this->getRetorno()->setData([
                     'horasParaLancamento' => $lancamentoJson[$post['anoPaginado']][$post['mesPaginado']], //Retorna o primeiro mês do
@@ -182,9 +157,10 @@ class CalculoService extends ServiceTrait{
                     'anoPaginado' => $post['anoPaginado'],
                     'mesPaginado' => $post['mesPaginado'],
                     'preCalculo' => $preCalculo,
-                    'resumoHoras' => $resumoHoras,
-                    'apuracao' => $apuracao,
-                    'mainTab' => $post['main-tab']
+                    'resumoHoras' => $processamento['resumoHoras'],
+                    'apuracao' => $processamento['apuracao'],
+                    'mainTab' => $post['main-tab'],
+                    'tabLancamento' => $post['tabLancamento']
                 ]);
 
                 return $this->getRetorno();
@@ -193,6 +169,49 @@ class CalculoService extends ServiceTrait{
             }
         }
         
+    }
+
+    private function calcularResumoApuracao($lancamentoJson){
+        $resumoHoras = array();
+        $apuracao = array();
+        foreach($lancamentoJson as $anoKey => $anoValues){
+            $totalizadorAno = [
+                'horas_trabalhadas' => 0,
+                'horas_noturnas' => 0,
+                'horas_diurnas' => 0
+            ];
+            foreach($anoValues as $mesKey => $mesValues){
+                $totalizadorMes = [
+                    'horas_trabalhadas' => 0,
+                    'horas_noturnas' => 0,
+                    'horas_diurnas' => 0
+                ];
+
+                $apuracao[$anoKey][$mesKey] = [
+                    'domingo' => 0,
+                    'seg_sexta' => 0,
+                    'sabado' => 0,
+                    'feriado' =>  0,
+                    'dias_uteis' => 0
+                ];
+
+                foreach($mesValues as $diaKey => $lancamento){
+                    $resumoHoras[$anoKey][$mesKey][$diaKey] = $this->calcularResumoHora($lancamento);
+
+                    $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
+                    $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
+                  
+                    $apuracao[$anoKey][$mesKey] = $this->calcularApuracao($apuracao[$anoKey][$mesKey], $resumoHoras[$anoKey][$mesKey][$diaKey]);
+                }
+                $resumoHoras[$anoKey][$mesKey]['total'] = $totalizadorMes;
+            }
+            $resumoHoras[$anoKey]['total'] = $totalizadorAno;
+        }
+
+        return [
+            'resumoHoras' => $resumoHoras,
+            'apuracao' => $apuracao
+        ];
     }
 
     private function calcularResumoHora($lancamento){
