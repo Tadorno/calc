@@ -86,7 +86,7 @@ class CalculoService extends ServiceTrait{
             if($this->setLancamentoJson($lancamentoJson)) {
                 $mes = $post['mes'] != null ? $post['mes'] : key($lancamentoJson[$post['ano']]);
 
-                $processamento = calcularResumoApuracao($lancamentoJson);
+                $processamento = $this->calcularResumoApuracao($lancamentoJson);
 
                 $this->getRetorno()->setData([
                     'horasParaLancamento' => $lancamentoJson[$post['ano']][$mes], //Retorna o primeiro mês do
