@@ -139,8 +139,8 @@ class ResumoHorasService{
         $inicio2 = null;
         $fim2 = null;
 
-        $inicioHoraNoturna = HoraUtil::converterHoraEmDecimal(Yii::$app->params['hr_inicio_hora_noturna']);
-        $fimHoraNorturna = HoraUtil::converterHoraEmDecimal(Yii::$app->params['hr_fim_hora_noturna']);
+        $inicioHoraNoturna = HoraUtil::converterHoraEmDecimal(Yii::$app->params['periodo_noturno']['hr_inicio_hora_noturna']);
+        $fimHoraNorturna = HoraUtil::converterHoraEmDecimal(Yii::$app->params['periodo_noturno']['hr_fim_hora_noturna']);
 
         $horas_noturnas = null;
 

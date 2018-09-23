@@ -54,7 +54,7 @@ class ApuracaoService{
     private function calcularApuracaoDia($apuracao, $resumoDia){
 
         $date = DateUtil::strToDate($resumoDia['data']);
-        $diasUteis = Yii::$app->params['dias_uteis'];
+        $diasUteis = Yii::$app->params['dias_uteis']['dias'];
 
         if(in_array($date->format('N'), $diasUteis)){
             $apuracao['dias_uteis']++;
