@@ -22,6 +22,16 @@ use yii\web\Cookie;
  * @author tulio
  */
 class CalculoService extends ServiceTrait{
+
+    private $apuracaoService;
+    private $resumoService;
+
+    public function __construct(){
+        parent::__construct();
+
+        $this->apuracaoService = new ApuracaoService();  
+        $this->resumoService = new ResumoHorasService(); 
+    }
     
     protected function getModel(){
         return $model = new PreCalculoRecord();
@@ -57,7 +67,8 @@ class CalculoService extends ServiceTrait{
             fclose($lancamentoJson);
 
             $lancamentoJson = $this->getLancamentoJson();
-            $processamento = $this->calcularResumoApuracao($lancamentoJson);
+            $resumo = $this->resumoService->calcularResumoHoras($lancamentoJson);
+            $apuracao = $this->apuracaoService->calcularApuracao($lancamentoJson);
 
             $this->getRetorno()->setData([
                 'preCalculo' => $preCalculo,
@@ -66,8 +77,8 @@ class CalculoService extends ServiceTrait{
                 'mesesTrabalhadosNoAno' => array_keys(current($dadosDeLancamento)),
                 'anoPaginado' => array_keys($dadosDeLancamento)[0],
                 'mesPaginado' => key(current($dadosDeLancamento)),
-                'resumoHoras' => $processamento['resumoHoras'],
-                'apuracao' => $processamento['apuracao']
+                'resumoHoras' => $resumo,
+                'apuracao' => $apuracao
             ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
@@ -86,7 +97,7 @@ class CalculoService extends ServiceTrait{
             if($this->setLancamentoJson($lancamentoJson)) {
                 $mes = $post['mes'] != null ? $post['mes'] : key($lancamentoJson[$post['ano']]);
 
-                $processamento = $this->calcularResumoApuracao($lancamentoJson);
+                $resumo = $this->resumoService->calcularResumoHoras($lancamentoJson);
 
                 $this->getRetorno()->setData([
                     'horasParaLancamento' => $lancamentoJson[$post['ano']][$mes], //Retorna o primeiro mês do
@@ -95,7 +106,7 @@ class CalculoService extends ServiceTrait{
                     'anoPaginado' => $post['ano'],
                     'mesPaginado' => $mes,
                     'tabLancamento' => $post['tabLancamento'],
-                    'resumoHoras' => $processamento['resumoHoras']
+                    'resumoHoras' => $resumo
                 ]);
                 
             }else {
@@ -105,8 +116,54 @@ class CalculoService extends ServiceTrait{
             return $this->getRetorno();
         }
     }
+    
+    public function processarManterApuracao(){
+        $post = Yii::$app->request->post();
 
-    public function atualizarJsonLancamento($json, $post){
+        if($post){
+            $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
+        
+            if($this->setLancamentoJson($lancamentoJson)) {
+                $apuracao = $this->apuracaoService->calcularApuracao($lancamentoJson);
+                
+                $this->getRetorno()->setData([
+                    'anosTrabalhados' => array_keys($lancamentoJson),
+                    'apuracao' => $apuracao
+                ]);
+            }
+
+            return $this->getRetorno();
+        }
+    }
+
+    public function processarResumoHoras(){
+         
+        $post = Yii::$app->request->post();
+
+        if($post){
+
+            $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
+
+            if($this->setLancamentoJson($lancamentoJson)) {
+
+                $resumo = $this->resumoService->calcularResumoHoras($lancamentoJson);
+
+                $this->getRetorno()->setData([
+                    'resumoHoras' => $resumo
+                ]);
+
+                return $this->getRetorno();
+            }else {
+                throw new \Exception("Erro ao modificar arquivo de lançamento");
+            }
+        }
+        
+    }
+
+    /**
+     * Atualiza o json com os dados de entrada paginado
+     */
+    private function atualizarJsonLancamento($json, $post){
         //Atualiza o Json com o resultado inputado
         $ano = $post['anoPaginado'];
         $mes = $post['mesPaginado'];
@@ -132,273 +189,6 @@ class CalculoService extends ServiceTrait{
         }
 
         return $json;
-    }
-    
-
-    public function processarHoras(){
-         
-        $post = Yii::$app->request->post();
-
-        if($post){
-            
-            $preCalculo = new PreCalculoRecord();
-            $preCalculo->load(Yii::$app->request->post());
-
-            $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
-
-            if($this->setLancamentoJson($lancamentoJson)) {
-
-                $processamento = $this->calcularResumoApuracao($lancamentoJson);
-
-                $this->getRetorno()->setData([
-                    'horasParaLancamento' => $lancamentoJson[$post['anoPaginado']][$post['mesPaginado']], //Retorna o primeiro mês do
-                    'anosTrabalhados' => array_keys($lancamentoJson),
-                    'mesesTrabalhadosNoAno' => array_keys($lancamentoJson[$post['anoPaginado']]),
-                    'anoPaginado' => $post['anoPaginado'],
-                    'mesPaginado' => $post['mesPaginado'],
-                    'preCalculo' => $preCalculo,
-                    'resumoHoras' => $processamento['resumoHoras'],
-                    'apuracao' => $processamento['apuracao'],
-                    'mainTab' => $post['main-tab'],
-                    'tabLancamento' => $post['tabLancamento']
-                ]);
-
-                return $this->getRetorno();
-            }else {
-                throw new \Exception("Erro ao modificar arquivo de lançamento");
-            }
-        }
-        
-    }
-
-    private function calcularResumoApuracao($lancamentoJson){
-        $resumoHoras = array();
-        $apuracao = array();
-        foreach($lancamentoJson as $anoKey => $anoValues){
-            $totalizadorAno = [
-                'horas_trabalhadas' => 0,
-                'horas_noturnas' => 0,
-                'horas_diurnas' => 0
-            ];
-            foreach($anoValues as $mesKey => $mesValues){
-                $totalizadorMes = [
-                    'horas_trabalhadas' => 0,
-                    'horas_noturnas' => 0,
-                    'horas_diurnas' => 0
-                ];
-
-                $apuracao[$anoKey][$mesKey] = [
-                    'domingo' => 0,
-                    'seg_sexta' => 0,
-                    'sabado' => 0,
-                    'feriado' =>  0,
-                    'dias_uteis' => 0
-                ];
-
-                foreach($mesValues as $diaKey => $lancamento){
-                    $resumoHoras[$anoKey][$mesKey][$diaKey] = $this->calcularResumoHora($lancamento);
-
-                    $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
-                    $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
-                  
-                    $apuracao[$anoKey][$mesKey] = $this->calcularApuracao($apuracao[$anoKey][$mesKey], $resumoHoras[$anoKey][$mesKey][$diaKey]);
-                }
-                $resumoHoras[$anoKey][$mesKey]['total'] = $totalizadorMes;
-            }
-            $resumoHoras[$anoKey]['total'] = $totalizadorAno;
-        }
-
-        return [
-            'resumoHoras' => $resumoHoras,
-            'apuracao' => $apuracao
-        ];
-    }
-
-    private function calcularResumoHora($lancamento){
-        $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
-        $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
-        $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
-        $horas_extras =  $this->calcularHorasExtras($lancamento);  
-
-        return [
-            'data' => $lancamento['data'],
-            'dia_da_semana' => $lancamento['dia_da_semana'],
-            'horas_trabalhadas' => $horas_trabalhadas,
-            'horas_noturnas' => $horas_noturnas,
-            'horas_diurnas' => $horas_diurnas,
-            'horas_extras' => $horas_extras
-        ];
-    }
-
-    private function calcularApuracao($apuracao, $resumoDia){
-        $date = DateUtil::strToDate($resumoDia['data']);
-        $diasUteis = Yii::$app->params['dias_uteis'];
-
-        if(in_array($date->format('N'), $diasUteis)){
-            $apuracao['dias_uteis']++;
-        }
-
-        if($date->format('l') == 'Sunday'){
-            $apuracao['domingo'] += $resumoDia['horas_trabalhadas'];
-        } elseif($date->format('l') == 'Saturday'){
-            $apuracao['sabado'] += $resumoDia['horas_trabalhadas'];
-        } else{
-            $apuracao['seg_sexta'] += $resumoDia['horas_trabalhadas'];
-        }
-
-        return $apuracao;
-    }
-
-    private function totalizadorDeMes($totalizador, $resumoDiario, $anoKey, $mesKey){
-        $totalizador['horas_trabalhadas'] += $resumoDiario['horas_trabalhadas'];
-        $totalizador['horas_noturnas'] += $resumoDiario['horas_noturnas'];
-        $totalizador['horas_diurnas'] += $resumoDiario['horas_diurnas'];
-
-        return $totalizador;
-    }
-
-    private function totalizadorDeAnos($totalizador, $resumoDiario, $anoKey){
-        $totalizador['horas_trabalhadas'] += $resumoDiario['horas_trabalhadas'];
-        $totalizador['horas_noturnas'] += $resumoDiario['horas_noturnas'];
-        $totalizador['horas_diurnas'] += $resumoDiario['horas_diurnas'];
-
-        return $totalizador;
-    }
-
-    /**
-     * Calcula as horas extras de um dia lançado
-     */
-    private function calcularHorasExtras($horasTrabalhadas){
-        $horasSemanais = Yii::$app->params['horas_semanais'];
-        //$horasDiarias = $horasSemanais
-    }
-
-    /**
-     * Calcula o somatório dos intervalos de horas informados 
-     */
-    private function calcularHorasTrabalhadas($lancamento){
-        $intervalo_1 = $this->calcularIntervalo($lancamento['entrada_1'], $lancamento['saida_1']);
-        $intervalo_2 = $this->calcularIntervalo($lancamento['entrada_2'], $lancamento['saida_2']);
-        $intervalo_3 = $this->calcularIntervalo($lancamento['entrada_3'], $lancamento['saida_3']);
-        $intervalo_4 = $this->calcularIntervalo($lancamento['entrada_4'], $lancamento['saida_4']);
-
-        return $intervalo_1 + $intervalo_2 + $intervalo_3 + $intervalo_4;
-    }
-
-    private function calcularHorasNoturnas($lancamento){
-        $intervalo_1 = $this->calcularIntervaloNortuno($lancamento['entrada_1'], $lancamento['saida_1']);
-        $intervalo_2 = $this->calcularIntervaloNortuno($lancamento['entrada_2'], $lancamento['saida_2']);
-        $intervalo_3 = $this->calcularIntervaloNortuno($lancamento['entrada_3'], $lancamento['saida_3']);
-        $intervalo_4 = $this->calcularIntervaloNortuno($lancamento['entrada_4'], $lancamento['saida_4']);
-
-        return $intervalo_1 + $intervalo_2 + $intervalo_3 + $intervalo_4;
-    }
-
-    /**
-     * Calcula o intervalo entre duas horas para o cálculo trabalhista
-     */
-    private function calcularIntervalo($entrada, $saida){
-        $inicio = $this->converterHoraEmDecimal($entrada);
-        $fim = $this->converterHoraEmDecimal($saida);
-    
-        if(($inicio < $fim) || ($inicio ==0 && $fim == 0)){
-            return $fim - $inicio;
-        } else{
-            return $fim - $inicio + 24;
-        }
-    }
-
-    /**
-     * Calcular o intervalo noturno entre duas horas
-     */
-    private function calcularIntervaloNortuno($entrada, $saida){
-        $inicio = $this->converterHoraEmDecimal($entrada);
-        $fim = $this->converterHoraEmDecimal($saida);
-        $inicio2 = null;
-        $fim2 = null;
-
-        $inicioHoraNoturna = $this->converterHoraEmDecimal(Yii::$app->params['hr_inicio_hora_noturna']);
-        $fimHoraNorturna = $this->converterHoraEmDecimal(Yii::$app->params['hr_fim_hora_noturna']);
-
-        $horas_noturnas = null;
-
-        if(($inicio == 0 && $fim == 0) 
-            || ($inicio >= $fimHoraNorturna 
-                && $inicio < $inicioHoraNoturna
-                && $fim > $fimHoraNorturna
-                && $fim <= $inicioHoraNoturna
-                && $inicio < $fim)){
-                    $horas_noturnas = 0;
-        }else{
-            if($inicio == $fim){
-                $horas_noturnas = $fimHoraNorturna -  $inicioHoraNoturna;   
-            } else{
-                if($inicio > $fim){
-
-                    if(($inicio <= $fimHoraNorturna && $fim < $fimHoraNorturna)
-                        || $inicio > $inicioHoraNoturna && $fim >= $inicioHoraNoturna){
-
-                            $fim = $fimHoraNorturna;
-                            $inicio2 = $inicioHoraNoturna;
-                            $fim2 = $fim;
-                    }else{
-                        if($inicio <= $inicioHoraNoturna){
-                            $inicio = $inicioHoraNoturna; 
-                        }
-                        if($fim >= $fimHoraNorturna){
-                            $fim = $fimHoraNorturna;
-                        }
-                    }
-                }else{
-                    if(!($inicio < $fimHoraNorturna && $fim <= $fimHoraNorturna)){
-                        if(!($inicio > $inicioHoraNoturna && $fim > $inicioHoraNoturna)){
-                            if($inicio < $fimHoraNorturna 
-                                && $fim > $fimHoraNorturna
-                                && $fim > $inicioHoraNoturna){
-                                    $fim = $fimHoraNorturna;  
-                            }else{
-                                if($inicio < $inicioHoraNoturna
-                                 && $inicio >= $fimHoraNorturna
-                                 && $fim > $inicioHoraNoturna){
-                                    $inicio = $inicioHoraNoturna;
-                                }
-                               
-                            }
-                        }
-                    }
-
-                    if($inicio < $fimHoraNorturna && $fim > $inicioHoraNoturna) {
-                        $fim =  $fimHoraNorturna;
-                        $inicio2 = $inicioHoraNoturna;
-                        $fim2 = $fim;
-                    }
-                }
-                $horas_noturnas = $fim - $inicio;
-                if($inicio2 != null && $fim2 != null){
-                    $horas_noturnas +=  ($fim2 - $inicio2);
-                }
-            }
-        }
-        if($horas_noturnas < 0) {
-            $horas_noturnas += 24;
-        }
-        
-        return $horas_noturnas;
-    }
-
-    /**
-     * Converte uma hora no formato hh:mm para seu correspondente em horas decimais
-     */
-    private function converterHoraEmDecimal($hora){
-        if($hora != ''){
-            $array_hour = explode(":", $hora);
-
-            $h = str_replace('h', '0', $array_hour[0]);
-            $m = str_replace('m', '0', $array_hour[1]);
-            return round(intval($h) + doubleval($m / 60), 2);
-        } else {
-            return 0;
-        }
     }
 
     private function montarCamposParaLancamentoDeHoras(PreCalculoRecord $preCalculo){
@@ -439,18 +229,27 @@ class CalculoService extends ServiceTrait{
         return $horasParaLancamento;
     }
 
+    /**
+     * Retorna o Json a ser trabalhado
+     */
     private function getLancamentoJson(){
         $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
 
         return json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
     }
 
+    /**
+     * Salva o json e retorna true se não houve erros
+     */
     private function setLancamentoJson($lancamentoJson){
         $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
 
         return file_put_contents($jsonFile, json_encode($lancamentoJson));
     }
 
+    /**
+     * Preenche um lançamento diário
+     */
     private function fillLancamento($date){
 
         $lancamento = [

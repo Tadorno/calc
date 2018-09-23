@@ -6,9 +6,13 @@
     <thead>
         <tr>
             <th>Mês</th>
-            <th>Domingo</th>
-            <th>Seg. a Sex.</th>
-            <th>Sábado</th>
+            <th>Dom</th>
+            <th>Seg</th>
+            <th>Ter</th>
+            <th>Qua</th>
+            <th>Qui</th>
+            <th>Sex</th>
+            <th>Sab</th>
             <th>Feriado</th>
             <th>Dias Úteis</th>
         </tr>
@@ -20,10 +24,14 @@
 
             <tr>
                 <td><?= DateUtil::mes_ptBR[$key] ?></td>
-                <td><?= number_format($model['domingo'], 2); ?></td>
-                <td><?= number_format($model['seg_sexta'], 2); ?></td>
-                <td><?= number_format($model['sabado'], 2); ?></td>
-                <td><?= number_format($model['feriado'], 2); ?></td>
+                <td><?= $model['Sun']; ?></td>
+                <td><?= $model['Mon']; ?></td>
+                <td><?= $model['Tue']; ?></td>
+                <td><?= $model['Wed']; ?></td>
+                <td><?= $model['Thu']; ?></td>
+                <td><?= $model['Fri']; ?></td>
+                <td><?= $model['Sat']; ?></td>
+                <td><?= $model['feriado']; ?></td>
                 <td><?= $model['dias_uteis']; ?></td>
             </tr>
 

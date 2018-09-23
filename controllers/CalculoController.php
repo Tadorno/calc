@@ -74,24 +74,33 @@ class CalculoController extends ControllerTrait
             return $this->redirect(['pre-calculo']);
         }
     }
-
-    public function actionProcessarHoras(){
+    
+    public function actionManterAbaApuracao(){
         try{
             
-            $retorno = $this->getService()->processarHoras();
+            $retorno = $this->getService()->processarManterApuracao();
             $data = $retorno->getData();
 
-            return $this->renderPartial('_calculo_content', [
-                'resumoHoras' => $data["resumoHoras"],
-                'preCalculo' => $data["preCalculo"],
-                'horasParaLancamento' => $data["horasParaLancamento"],
+            return $this->renderPartial('apuracao/_apuracao', [  
                 'anosTrabalhados' => $data["anosTrabalhados"],
-                'mesesTrabalhadosNoAno' => $data["mesesTrabalhadosNoAno"],
-                'anoPaginado' => $data["anoPaginado"],
-                'mesPaginado' => $data["mesPaginado"],
-                'mainTab' => $data['mainTab'],
-                'apuracao' => $data['apuracao'],
-                'tabLancamento' => $data['tabLancamento'],
+                'apuracao' => $data['apuracao']
+            ]);
+
+        }catch(\Exception $e){
+            $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));
+            print_r($e);
+            return $this->redirect(['pre-calculo']);
+        }
+    }
+
+    public function actionManterAbaResumo(){
+        try{
+            
+            $retorno = $this->getService()->processarResumoHoras();
+            $data = $retorno->getData();
+
+            return $this->renderPartial('lancamento-horas/_resumo_horas', [  
+                'resumoHoras' => $data["resumoHoras"]
             ]);
 
         }catch(\Exception $e){

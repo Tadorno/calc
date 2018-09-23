@@ -1,4 +1,29 @@
 $(document).ready(function(){
+    $('#calculo-content').on('click', '.manter-aba-resumo', function(event) {
+        event.preventDefault();
+
+        if($('#processar-aba-resumo').val() == "true"){
+            var input = $('#id-calculo-form').serializeArray();
+
+            $.ajax({
+                url: '/calculo/manter-aba-resumo',
+                type: 'post',
+                data: input,
+                beforeSend: function()
+                { 
+                    SimpleLoading.start(); 
+                },
+                success: function (data) {
+                    $("#tab-resumo-hora").html(data);
+                    $('#processar-aba-resumo').val(false) 
+                },
+                complete: function(){
+                    SimpleLoading.stop();
+                }
+            });
+        }
+    });
+
     $('#calculo-content').on('click', '.mudar-ano', function(event) {
         $("#tabLancamento").val($(this).data('tab'));  
 
@@ -14,7 +39,8 @@ $(document).ready(function(){
     });
 
     $('#calculo-content').on('change', '.altera-calculo', function(event) {
-        $("#processar").val(true);
+        $("#processar-aba-apuracao").val(true);
+        $("#processar-aba-resumo").val(true);
     });
 
     function mudarAba(ano, mes){

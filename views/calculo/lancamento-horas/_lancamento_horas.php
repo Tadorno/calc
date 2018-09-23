@@ -12,7 +12,7 @@
             <li id="tab_<?= $value ?>" data-ano=<?= $value ?> data-tab=<?= $value ?> class="<?= $value == $tabLancamento ? 'active mudar-ano' : 'mudar-ano' ?>"><a href="#tab_ano" data-toggle="tab"><?= $value ?></a></li>
 
             <?php };?>
-            <li data-tab-lancamento="tab-resumo-hora" class="processar-horas <?= $tabLancamento == 'tab-resumo-hora' ? 'active' : ''?>"><a href="#tab-resumo-hora" data-toggle="tab">Resumo de horas</a></li>
+            <li data-tab-lancamento="tab-resumo-hora" class="manter-aba-resumo <?= $tabLancamento == 'tab-resumo-hora' ? 'active' : ''?>"><a href="#tab-resumo-hora" data-toggle="tab">Resumo de horas</a></li>
         </ul>
     </div>
     <div class="panel-body">

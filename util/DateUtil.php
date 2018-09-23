@@ -2,7 +2,7 @@
 namespace app\util;
 
 /**
- * Classe responsável por armazenar o retorno da manipulação de dados
+ * Classe responsável pela manipulação da data
  * 
  * @author tulio
  */

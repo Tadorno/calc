@@ -1,20 +1,12 @@
 $(document).ready(function(){
-    $('#calculo-content').on('click', '.processar-horas', function(event) {
+    $('#calculo-content').on('click', '.manter-aba-apuracao', function(event) {
         event.preventDefault();
 
-        if($(this).data('tab') !== undefined){
-            $("#main-tab").val($(this).data('tab'));
-        }
-
-        if($(this).data('tab-lancamento') !== undefined){
-            $("#tabLancamento").val($(this).data('tab-lancamento')); 
-        }
-
-        if($('#processar').val() == "true"){
+        if($('#processar-aba-apuracao').val() == "true"){
             var input = $('#id-calculo-form').serializeArray();
 
             $.ajax({
-                url: '/calculo/processar-horas',
+                url: '/calculo/manter-aba-apuracao',
                 type: 'post',
                 data: input,
                 beforeSend: function()
@@ -22,10 +14,10 @@ $(document).ready(function(){
                     SimpleLoading.start(); 
                 },
                 success: function (data) {
-                    $("#calculo-content").html(data);    
+                    $("#tab-apuracao").html(data);
+                    $('#processar-aba-apuracao').val(false) 
                 },
                 complete: function(){
-                    $("#tab-lancamento-hora .hora").inputmask("hh:mm");
                     SimpleLoading.stop();
                 }
             });
@@ -33,6 +25,6 @@ $(document).ready(function(){
     });
 
     $('#calculo-content').on('click', '.main-tab', function(event) {       
-        $("#main-tab").val($(this).data('tab'));      
+        $("#main-tab").val($(this).data('tab')); 
     });
 }); 
