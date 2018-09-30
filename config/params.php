@@ -16,6 +16,7 @@ return [
         'feriado' => false
     ],
     'limite_carga_horaria' => [
+        'anual' => 2640,
         'mensal' => 220,
         'semanal' => 44,
         'ultimo_dia' => 6,

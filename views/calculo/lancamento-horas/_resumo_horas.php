@@ -16,10 +16,12 @@ use app\util\DateUtil;
         <li class="list-group-item node-treevie">
             <div data-nodeid="ano_<?= $anoKey ?>" data-nodesinal="+" class="treeview-item">
                 <span class="icon expand-icon glyphicon glyphicon-plus span_ano_<?= $anoKey ?>"></span>
-                <b><?= $anoKey ?>:
-                <span class="indent"></span>Horas Trabalhadas: <?= number_format($anoValues['total']['horas_trabalhadas'], 2) ?>
-                <span class="indent"></span>Horas Diurnas: <?= number_format($anoValues['total']['horas_diurnas'], 2) ?>
-                <span class="indent"></span>Horas Noturnas: <?= number_format($anoValues['total']['horas_noturnas'], 2) ?></b>
+                <b>
+                    <?= $anoKey ?>:
+                    <span class="indent"></span>Horas Trabalhadas: <?= number_format($anoValues['total']['horas_trabalhadas'], 2) ?>
+                    <span class="indent"></span>Horas Noturnas: <?= number_format($anoValues['total']['horas_noturnas'], 2) ?>
+                    <span class="indent"></span>Horas Extras: <?= number_format($anoValues['total']['horas_extras'], 2) ?>
+                </b>
             </div>
 
             <ul class="list-group ano_<?= $anoKey ?> hide">
@@ -27,10 +29,12 @@ use app\util\DateUtil;
                     <li class="list-group-item node-treeview">
                         <div data-nodeid="mes_<?= $mesKey ?>" data-nodesinal="+" class="treeview-item">
                             <span class="icon expand-icon glyphicon glyphicon-plus span_mes_<?= $mesKey ?>"></span>
-                            <b><?= DateUtil::mes_ptBR[$mesKey] ?>:
-                            <span class="indent">Horas Trabalhadas: <?= number_format($mesValues['total']['horas_trabalhadas'], 2) ?>
-                            <span class="indent">Horas Diurnas: <?= number_format($mesValues['total']['horas_diurnas'], 2) ?>
-                            <span class="indent">Horas Noturnas: <?= number_format($mesValues['total']['horas_noturnas'], 2) ?></b>
+                            <b>
+                                <?= DateUtil::mes_ptBR[$mesKey] ?>:
+                                <span class="indent">Horas Trabalhadas: <?= number_format($mesValues['total']['horas_trabalhadas'], 2) ?>
+                                <span class="indent">Horas Noturnas: <?= number_format($mesValues['total']['horas_noturnas'], 2) ?>
+                                <span class="indent">Horas Extras: <?= number_format($mesValues['total']['horas_extras'], 2) ?>
+                            </b>
                         </div>
                         <table class="table table-striped mes_<?= $mesKey ?> hide" id="tabela-resumo-horas">
                             <thead>

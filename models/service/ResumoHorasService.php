@@ -19,19 +19,27 @@ class ResumoHorasService{
      * Calcula o resumo no período informado
      */
     public function calcularResumoHoras($lancamentoJson){
+        $limiteCargaHoraria = Yii::$app->params['limite_carga_horaria'];
+        $limiteMensal = $limiteCargaHoraria['mensal'];
+        $limiteAnual = $limiteCargaHoraria['anual'];
+
         $resumoHoras = array();
         $horas_semanais = 0;
+        $horas_mensais = 0;
+
         foreach($lancamentoJson as $anoKey => $anoValues){
             $totalizadorAno = [
                 'horas_trabalhadas' => 0,
                 'horas_noturnas' => 0,
-                'horas_diurnas' => 0
+                'horas_diurnas' => 0,
+                'horas_extras' => 0
             ];
             foreach($anoValues as $mesKey => $mesValues){
                 $totalizadorMes = [
                     'horas_trabalhadas' => 0,
                     'horas_noturnas' => 0,
-                    'horas_diurnas' => 0
+                    'horas_diurnas' => 0,
+                    'horas_extras' => 0
                 ];
 
                 foreach($mesValues as $diaKey => $lancamento){
@@ -48,8 +56,14 @@ class ResumoHorasService{
                     $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
                   
                 }
+
+                $totalizadorMes['horas_extras'] = $totalizadorMes['horas_trabalhadas'] > $limiteMensal ? $totalizadorMes['horas_trabalhadas'] - $limiteMensal : 0;
+                
                 $resumoHoras[$anoKey][$mesKey]['total'] = $totalizadorMes;
             }
+
+            $totalizadorAno['horas_extras'] = $totalizadorAno['horas_trabalhadas'] > $limiteAnual ? $totalizadorAno['horas_trabalhadas'] - $limiteAnual : 0;
+
             $resumoHoras[$anoKey]['total'] = $totalizadorAno;
         }
 
