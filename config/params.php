@@ -16,9 +16,9 @@ return [
         'feriado' => false
     ],
     'limite_carga_horaria' => [
-        'mensal' => '220',
-        'semanal' => 40,
-        'ultimo_dia' => 7,
+        'mensal' => 220,
+        'semanal' => 44,
+        'ultimo_dia' => 6,
         'Sun' => '08:00',
         'Mon' => '08:00',
         'Tue' => '08:00',

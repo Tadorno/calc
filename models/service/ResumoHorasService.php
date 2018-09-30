@@ -4,6 +4,8 @@
 namespace app\models\service;
 
 use app\util\HoraUtil;
+use app\util\DateUtil;
+use app\enum\DiaEnum;
 use Yii;
 
 /**
@@ -18,6 +20,7 @@ class ResumoHorasService{
      */
     public function calcularResumoHoras($lancamentoJson){
         $resumoHoras = array();
+        $horas_semanais = 0;
         foreach($lancamentoJson as $anoKey => $anoValues){
             $totalizadorAno = [
                 'horas_trabalhadas' => 0,
@@ -32,8 +35,15 @@ class ResumoHorasService{
                 ];
 
                 foreach($mesValues as $diaKey => $lancamento){
+                    //Calcula o resumo de horas (horas trabalhadas, norturnas e diária)
                     $resumoHoras[$anoKey][$mesKey][$diaKey] = $this->calcularResumoHoraDia($lancamento);
                     
+                    //Calcula a hora extra diária semanal e mensal
+                    $horas_extras =  $this->calcularHorasExtras($resumoHoras[$anoKey][$mesKey][$diaKey], $horas_semanais);
+
+                    $resumoHoras[$anoKey][$mesKey][$diaKey]['horas_extras'] = $horas_extras;
+
+                    //Calcula os totalizadores por mes/ano
                     $totalizadorMes = $this->totalizadorDeMes($totalizadorMes, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey, $mesKey);
                     $totalizadorAno = $this->totalizadorDeAnos($totalizadorAno, $resumoHoras[$anoKey][$mesKey][$diaKey], $anoKey);
                   
@@ -53,15 +63,13 @@ class ResumoHorasService{
         $horas_trabalhadas = $this->calcularHorasTrabalhadas($lancamento);
         $horas_noturnas =  $this->calcularHorasNoturnas($lancamento);
         $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
-        $horas_extras =  $this->calcularHorasExtras($lancamento);  
 
         return [
             'data' => $lancamento['data'],
             'dia_da_semana' => $lancamento['dia_da_semana'],
             'horas_trabalhadas' => $horas_trabalhadas,
             'horas_noturnas' => $horas_noturnas,
-            'horas_diurnas' => $horas_diurnas,
-            'horas_extras' => $horas_extras
+            'horas_diurnas' => $horas_diurnas
         ];
     }
 
@@ -90,9 +98,34 @@ class ResumoHorasService{
     /**
      * Calcula as horas extras de um dia lançado
      */
-    private function calcularHorasExtras($horasTrabalhadas){
-        $horasSemanais = Yii::$app->params['horas_semanais'];
-        //$horasDiarias = $horasSemanais
+    private function calcularHorasExtras($resumoDia, &$horas_semanais){
+        $limiteCargaHoraria = Yii::$app->params['limite_carga_horaria'];
+        $limiteSemanal = $limiteCargaHoraria['semanal'];
+        $ultimoDiaDaSemana = $limiteCargaHoraria['ultimo_dia'];
+        $date = DateUtil::strToDate($resumoDia['data']);
+
+        $limiteCargaDia = HoraUtil::converterHoraEmDecimal($limiteCargaHoraria[$date->format('D')]);
+        
+        //Verifica se o dia a ser calculado é o ultimo dia da semana
+        if($date->format('N') != $ultimoDiaDaSemana){
+            //Calcula a hora extra do dia
+            $extra_diaria = $resumoDia['horas_trabalhadas'] <= $limiteCargaDia ? 0 : $resumoDia['horas_trabalhadas'] - $limiteCargaDia;
+            
+            //Incrementa a hora trabalhada da semana com a hora do dia, caso a hora do dia seja superior
+            // ao limite diário, usa o limite diário
+            $horas_semanais += $resumoDia['horas_trabalhadas'] > $limiteCargaDia ? $limiteCargaDia : $resumoDia['horas_trabalhadas'];
+            
+            return $extra_diaria;
+        }else{
+            $horas_semanais += $resumoDia['horas_trabalhadas'];
+
+            $extra_semanal = $horas_semanais <= $limiteSemanal ? 0 : $horas_semanais - $limiteSemanal;
+            
+            $horas_semanais = 0;
+        
+            return $extra_semanal;
+        }
+ 
     }
 
     /**

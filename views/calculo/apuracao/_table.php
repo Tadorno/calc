@@ -13,8 +13,9 @@
             <th>Qui</th>
             <th>Sex</th>
             <th>Sab</th>
-            <th>Feriado</th>
-            <th>Dias Úteis</th>
+            <th>F.</th>
+            <th>D. U.</th>
+            <th>H. C.</th>
         </tr>
     </thead>
     <tbody id="tbody-tabela-apuracao">
@@ -33,6 +34,7 @@
                 <td><?= $model['Sat']; ?></td>
                 <td><?= $model['feriado']; ?></td>
                 <td><?= $model['dias_uteis']; ?></td>
+                <td>0</td>
             </tr>
 
         <?php };?>

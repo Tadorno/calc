@@ -38,8 +38,8 @@ use app\util\DateUtil;
                                     <th>Data</th>
                                     <th>Dia</th>
                                     <th>Horas Trabalhadas</th>
-                                    <th>Horas Diurnas</th>
                                     <th>Horas Noturnas</th>
+                                    <th>Horas Extras</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-resumo-horas">
@@ -54,9 +54,9 @@ use app\util\DateUtil;
 
                                     <td><?= number_format($diaValues['horas_trabalhadas'], 2)?></td>
 
-                                    <td><?= number_format($diaValues['horas_diurnas'], 2)?></td>
-
                                     <td><?= number_format($diaValues['horas_noturnas'], 2)?></td>
+
+                                    <td><?= number_format($diaValues['horas_extras'], 2)?></td>
                                 </tr>    
                             <?php }}?>    
                             </tbod>
