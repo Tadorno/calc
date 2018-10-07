@@ -7,7 +7,7 @@
                 foreach ($anosTrabalhados as $value){
             ?>       
 
-            <li id="tab_remuneracao_<?= $value ?>" <?= $anoPaginado == $value ? 'class="active"' : '' ?> data-ano=<?= $value ?> ><a href="#tab_ano_remuneracao_<?= $value ?>" data-toggle="tab"><?= $value ?></a></li>
+            <li id="tab_remuneracao_<?= $value ?>" class="<?= $anoPaginado == $value ? 'active mudar-ano-remuneracao' : 'mudar-ano-remuneracao' ?>" data-ano=<?= $value ?> ><a href="#tab_ano_remuneracao_<?= $value ?>" data-toggle="tab"><?= $value ?></a></li>
 
             <?php }?>
             

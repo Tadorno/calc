@@ -111,6 +111,23 @@ class CalculoController extends ControllerTrait
         }
     }
 
+    public function actionMudarAbaRemuneracao(){
+        try{
+            $retorno = $this->getService()->mudarAbaRemuneracao();
+            $data = $retorno->getData();
+ 
+            return $this->renderPartial('remuneracao/_remuneracao', [
+                'remuneracaoPage' => $data['remuneracaoPage'],
+                'anosTrabalhados' => $data["anosTrabalhados"],
+                'anoPaginado' => $data["anoPaginado"]
+            ]);
+        }catch(\Exception $e){
+            $this->addErrorMessage(MessageUtil::getMessage("MSGE1"));
+            print_r($e);
+            return $this->redirect(['pre-calculo']);
+        }
+    }
+
     public function actionMudarAbaLancamentoHoras(){
         try{
             $retorno = $this->getService()->mudarAba();

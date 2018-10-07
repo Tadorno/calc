@@ -124,6 +124,30 @@ class CalculoService extends ServiceTrait{
             return $this->getRetorno();
         }
     }
+
+    public function mudarAbaRemuneracao(){
+
+        $post = Yii::$app->request->post();
+
+        if($post){
+            
+            $remuneracaoJson = $this->atualizarJsonRemuneracao($this->getRemuneracaoJson(), $post);
+
+            if($this->setRemuneracaoJson($remuneracaoJson)) {
+
+                $this->getRetorno()->setData([
+                    'remuneracaoPage' => $remuneracaoJson[$post['ano']],
+                    'anosTrabalhados' => array_keys($remuneracaoJson),
+                    'anoPaginado' => $post['ano']
+                ]);
+                
+            }else {
+                throw new \Exception("Erro ao modificar arquivo de lançamento");
+            }
+
+            return $this->getRetorno();
+        }
+    }
     
     public function processarManterApuracao(){
         $post = Yii::$app->request->post();
@@ -169,7 +193,7 @@ class CalculoService extends ServiceTrait{
     }
 
     /**
-     * Atualiza o json com os dados de entrada paginado
+     * Atualiza o json de lancamento com os dados de entrada paginado
      */
     private function atualizarJsonLancamento($json, $post){
         //Atualiza o Json com o resultado inputado
@@ -194,6 +218,24 @@ class CalculoService extends ServiceTrait{
                 = $post['LancamentoHoraRecord'][$key]['saida_3'];
             $json[$ano][$mes][$key]['saida_4'] 
                 = $post['LancamentoHoraRecord'][$key]['saida_4'];
+        }
+
+        return $json;
+    }
+
+    /**
+     * Atualiza o json de remuneracao com os dados de entrada paginado
+     */
+    private function atualizarJsonRemuneracao($json, $post){
+        //Atualiza o Json com o resultado inputado
+        $ano = $post['anoPaginado'];
+
+        foreach($json[$ano] as $key => $lancamento){
+            $json[$ano][$key]['r_1'] = $post['RemuneracaoRecord'][$key]['r_1'];
+            $json[$ano][$key]['r_2'] = $post['RemuneracaoRecord'][$key]['r_2'];
+            $json[$ano][$key]['r_3'] = $post['RemuneracaoRecord'][$key]['r_3'];
+            $json[$ano][$key]['r_4'] = $post['RemuneracaoRecord'][$key]['r_4'];
+            $json[$ano][$key]['r_5'] = $post['RemuneracaoRecord'][$key]['r_5'];
         }
 
         return $json;

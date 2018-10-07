@@ -59,10 +59,10 @@ $(document).ready(function(){
             data: input,
             beforeSend: function()
             { 
-            SimpleLoading.start(); 
+                SimpleLoading.start(); 
             },
             success: function (data) {
-            $("#tab-lancamento-hora").html(data);
+                $("#tab-lancamento-hora").html(data);
             },
             complete: function(){
                 $("#tab-lancamento-hora .hora").inputmask("hh:mm");

@@ -9,6 +9,7 @@ $this->title = 'Cálculo';
 
 $this->registerJsFile("@web/js/calculo/calculo.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
 $this->registerJsFile("@web/js/calculo/lancamento-horas.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
+$this->registerJsFile("@web/js/calculo/remuneracao.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
 $this->registerJsFile("@web/js/calculo/apuracao.js", ['depends' => [\yii\web\JqueryAsset::className()]]);
 
 ?>
