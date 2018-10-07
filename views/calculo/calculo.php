@@ -27,7 +27,8 @@ $this->registerJsFile("@web/js/calculo/apuracao.js", ['depends' => [\yii\web\Jqu
             'preCalculo' => $preCalculo,
             'resumoHoras' => $resumoHoras,
             'apuracao' => $apuracao,
-            'tabLancamento' => $tabLancamento
+            'tabLancamento' => $tabLancamento,
+            'remuneracaoPage' => $remuneracaoPage
         ]) ?>
 
     </div>

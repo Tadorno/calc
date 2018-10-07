@@ -66,7 +66,8 @@ class CalculoController extends ControllerTrait
                 'resumoHoras' => $data["resumoHoras"],
                 'apuracao' => $data["apuracao"],
                 'mainTab' => 'tab-lancamento-hora',
-                'tabLancamento' => $data["anoPaginado"]
+                'tabLancamento' => $data["anoPaginado"],
+                'remuneracaoPage' => $data["remuneracaoPage"]
             ]);
         }catch(PreCalculoNaoIniciadoException $e){
             $this->addErrorMessage(MessageUtil::getMessage("MSGE7"));

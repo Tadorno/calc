@@ -14,6 +14,7 @@
     <div class="panel-heading">
         <ul class="nav nav-tabs">
             <li ><a href="#tab-review" data-toggle="tab" data-tab="tab-review" class="main-tab">Pré-cálculo</a></li>
+            <li ><a href="#tab-remuneracao" data-toggle="tab" data-tab="tab-remuneracao" class="main-tab">Remuneração</a></li>
             <li class="active"><a href="#tab-lancamento-hora" data-toggle="tab" data-tab="tab-lancamento-hora" class="main-tab processar-horas">Lançamento de horas</a></li>
             <li ><a href="#tab-apuracao" data-toggle="tab" data-tab="tab-apuracao" class="main-tab manter-aba-apuracao">Apuração</a></li>
         </ul>
@@ -25,6 +26,13 @@
                     'model' => $preCalculo,
                     'makeHidden' => true,
                     'form' => $form
+                ]) ?>
+            </div>
+            <div class="tab-pane fade" id="tab-remuneracao">
+                <?= $this->render('remuneracao/_remuneracao', [
+                    'remuneracaoPage' => $remuneracaoPage,
+                    'anosTrabalhados' => $anosTrabalhados,
+                    'anoPaginado' => $anoPaginado
                 ]) ?>
             </div>
             <div class="tab-pane fade in active" id="tab-lancamento-hora">

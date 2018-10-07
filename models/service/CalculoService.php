@@ -54,12 +54,17 @@ class CalculoService extends ServiceTrait{
         return $this->getRetorno();
     }
 
+    /**
+     * Prepara os atributos iniciais da tela de inputação de calculo
+     */
     public function calculo(){
         $preCalculo = new PreCalculoRecord();
 
         if($preCalculo->load(Yii::$app->request->post()) && $preCalculo->validate()){
 
-            $dadosDeLancamento = $this->montarCamposParaLancamentoDeHoras($preCalculo);
+            $dadosDeLancamento = array();
+            $dadosDeLancamento["lancamento"] = $this->montarCamposParaLancamentoDeHoras($preCalculo);
+            $dadosDeLancamento["remuneracao"] = $this->montarCamposParaRemuneracao($dadosDeLancamento["lancamento"]);
 
             //Armazena localmente o arquivo json para melhorar a performance para grandes períodos
             $lancamentoJson = fopen(Yii::$app->basePath . "/tmp/tmp.json", "w");
@@ -70,15 +75,18 @@ class CalculoService extends ServiceTrait{
             $resumo = $this->resumoService->calcularResumoHoras($lancamentoJson);
             $apuracao = $this->apuracaoService->calcularApuracao($lancamentoJson);
 
+            $remuneracaoJson = $this->getRemuneracaoJson();
+
             $this->getRetorno()->setData([
                 'preCalculo' => $preCalculo,
-                'horasParaLancamento' => current(current($dadosDeLancamento)), //Retorna o primeiro mês do
-                'anosTrabalhados' => array_keys($dadosDeLancamento),
-                'mesesTrabalhadosNoAno' => array_keys(current($dadosDeLancamento)),
-                'anoPaginado' => array_keys($dadosDeLancamento)[0],
-                'mesPaginado' => key(current($dadosDeLancamento)),
+                'horasParaLancamento' => current(current($lancamentoJson)),
+                'anosTrabalhados' => array_keys($lancamentoJson),
+                'mesesTrabalhadosNoAno' => array_keys(current($lancamentoJson)),
+                'anoPaginado' => array_keys($lancamentoJson)[0],
+                'mesPaginado' => key(current($lancamentoJson)),
                 'resumoHoras' => $resumo,
-                'apuracao' => $apuracao
+                'apuracao' => $apuracao,
+                'remuneracaoPage' => current($remuneracaoJson)
             ]);
         } else {
             throw new PreCalculoNaoIniciadoException("Pré calculo é obrigatório");
@@ -91,7 +99,7 @@ class CalculoService extends ServiceTrait{
         $post = Yii::$app->request->post();
 
         if($post){
-
+            
             $lancamentoJson = $this->atualizarJsonLancamento($this->getLancamentoJson(), $post);
 
             if($this->setLancamentoJson($lancamentoJson)) {
@@ -191,6 +199,9 @@ class CalculoService extends ServiceTrait{
         return $json;
     }
 
+    /**
+     * Preenche um array inicial para lancamento de horas
+     */
     private function montarCamposParaLancamentoDeHoras(PreCalculoRecord $preCalculo){
         $dataAdmissao = DateUtil::strToDate($preCalculo->dt_admissao);
         $dataAfastamento = DateUtil::strToDate($preCalculo->dt_afastamento);
@@ -230,21 +241,64 @@ class CalculoService extends ServiceTrait{
     }
 
     /**
-     * Retorna o Json a ser trabalhado
+     * Preenche um array inicial para lancamento de remuneraçao
      */
-    private function getLancamentoJson(){
-        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+    private function montarCamposParaRemuneracao($lancamentoJson){
+        $mesesParaRemuneracao = array();
 
-        return json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+        foreach($lancamentoJson as $anoKey => $anoValues){
+            foreach($anoValues as $mesKey => $mesValues){
+                $mesesParaRemuneracao[$anoKey][$mesKey] = [
+                    'r_1' => 0,
+                    'r_2' => 0,
+                    'r_3' => 0,
+                    'r_4' => 0,
+                    'r_5' => 0,
+                ];
+            }
+        }
+        
+        return $mesesParaRemuneracao;
     }
 
     /**
-     * Salva o json e retorna true se não houve erros
+     * Retorna o Json de Lancamento a ser trabalhado
+     */
+    private function getLancamentoJson(){
+        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+        $json = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+        return $json["lancamento"];
+    }
+
+    /**
+     * Retorna o Json de Remuneração a ser trabalhado
+     */
+    private function getRemuneracaoJson(){
+        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+        $json = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+        return $json["remuneracao"];
+    }
+
+    /**
+     * Salva o json de lancamento e retorna true se não houve erros
      */
     private function setLancamentoJson($lancamentoJson){
         $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+        $json = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
 
-        return file_put_contents($jsonFile, json_encode($lancamentoJson));
+        $json["lancamento"] = $lancamentoJson;
+        return file_put_contents($jsonFile, json_encode($json));
+    }
+
+    /**
+     * Salva o json de remuneracao e retorna true se não houve erros
+     */
+    private function setRemuneracaoJson($remuneracaoJson){
+        $jsonFile = Yii::$app->basePath . "/tmp/tmp.json";
+        $json = json_decode(file_get_contents(Yii::$app->basePath . "/tmp/tmp.json"), true);
+
+        $json["remuneracao"] = $remuneracaoJson;
+        return file_put_contents($jsonFile, json_encode($json));
     }
 
     /**

@@ -146,6 +146,9 @@ a.btn-lg{
     width: 70px;
     text-align: center;
 }
+.decimal-2{
+    width: 100px;
+}
 
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color:    #333;
